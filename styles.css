@@ -664,7 +664,7 @@ footer a:hover {
     top: 100%;
     left: 0;
     background-color: #FFFFFF;
-    min-width: 200px;
+    min-width: 300px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     border-radius: 12px;
     padding: 0.5rem 0;
@@ -675,19 +675,6 @@ footer a:hover {
     display: block;
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #FFFFFF;
-    min-width: 200px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-radius: 12px;
-    padding: 0.5rem 0;
-    z-index: 1001;
-}
-
 .saved-trip {
     display: flex;
     justify-content: space-between;
@@ -696,6 +683,8 @@ footer a:hover {
     color: #4A4A4A;
     text-decoration: none;
     transition: background-color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .saved-trip:hover {
@@ -706,7 +695,7 @@ footer a:hover {
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    margin-left: 1rem;
+    flex-shrink: 0;
 }
 
 .edit-trip,
@@ -742,28 +731,29 @@ footer a:hover {
 
 /* 保存行程模态框样式 */
 .save-trip-modal {
-    width: 400px;
+    width: 600px;
     height: auto;
-    padding: 2rem;
+    padding: 2.5rem;
 }
 
 .save-trip-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 #trip-name {
-    padding: 0.75rem;
+    padding: 1rem;
     border: 1px solid #E5E5E5;
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-family: "Inter", sans-serif;
+    width: 100%;
 }
 
 #confirm-save-trip {
-    padding: 0.75rem;
+    padding: 1rem;
     background-color: #A68B7C;
     color: white;
     border: none;
@@ -771,6 +761,7 @@ footer a:hover {
     cursor: pointer;
     font-family: "Inter", sans-serif;
     font-weight: 500;
+    font-size: 1.1rem;
     transition: background-color 0.3s;
 }
 

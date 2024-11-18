@@ -399,7 +399,7 @@ class TravelPlanner {
         this.addButton.textContent = t.addLocation;
         document.querySelector('.location-hint').textContent = t.locationHint;
         
-        // 更顺标
+        // 更顺��
         document.querySelector('.visit-order-panel h2').textContent = t.visitOrder;
         
         // 更新总结区域
@@ -581,7 +581,7 @@ class TravelPlanner {
 
         tripsList.innerHTML = savedTrips.map((trip, index) => `
             <a href="#" class="saved-trip" data-index="${index}">
-                ${trip.name}
+                <span>${trip.name}</span>
                 <div class="trip-actions">
                     <button class="edit-trip" data-index="${index}" title="Edit trip name">
                         <svg class="edit-icon" viewBox="0 0 24 24">
