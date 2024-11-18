@@ -106,6 +106,9 @@ nav a {
     cursor: move;
     position: relative;
     padding: 4rem 1.5rem 1.5rem 1.5rem;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #FFFFFF;
 }
 
 .route-info {
@@ -144,7 +147,7 @@ h4 {
 .route-map {
     width: 100%;
     height: 300px;
-    border-radius: 4px;
+    border-radius: 20px;
     background-color: #f8f9fa;
 }
 
@@ -167,6 +170,9 @@ h4 {
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #FFFFFF;
 }
 
 .total-stats {
@@ -179,7 +185,7 @@ h4 {
 }
 
 footer {
-    background-color: #2c3e50;
+    background-color: #3C3C3C;
     color: white;
     padding: 2rem 0;
     margin-top: 3rem;
@@ -255,11 +261,12 @@ footer a:hover {
 
 #language-select {
     padding: 0.3rem 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 16px;
+    border: 1px solid #E5E5E5;
     background-color: white;
     font-size: 0.9rem;
     cursor: pointer;
+    font-family: "Inter", sans-serif;
 }
 
 #language-select:hover {
@@ -285,6 +292,9 @@ footer a:hover {
     top: 80px;
     max-height: calc(100vh - 100px);
     overflow-y: auto;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #FFFFFF;
 }
 
 .visit-order-list {
@@ -295,10 +305,11 @@ footer a:hover {
     padding: 1rem;
     margin-bottom: 0.75rem;
     background: #f8f9fa;
-    border-radius: 4px;
+    border-radius: 16px;
     cursor: move;
     transition: background-color 0.2s;
     position: relative;
+    background-color: #FAF7F4;
 }
 
 .visit-order-item:hover {
@@ -313,9 +324,9 @@ footer a:hover {
 .visit-order-item .location-number {
     width: 24px;
     height: 24px;
-    background: #3498db;
+    background: #A68B7C;
     color: white;
-    border-radius: 50%;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -352,7 +363,7 @@ footer a:hover {
 .visit-order-item .delete-icon {
     width: 16px;
     height: 16px;
-    fill: #e74c3c;
+    fill: #A68B7C;
 }
 
 .visit-order-item:hover .delete-location {
@@ -391,11 +402,12 @@ footer a:hover {
     left: 1rem;
     top: 1rem;
     padding: 0.5rem 1rem;
-    background: #3498db;
+    background: #A68B7C;
     color: white;
-    border-radius: 4px;
+    border-radius: 16px;
     font-weight: 500;
     font-size: 0.9rem;
+    font-family: "Inter", sans-serif;
 }
 
 .route-section .remove-location {
@@ -405,7 +417,7 @@ footer a:hover {
 .route-section .delete-icon {
     width: 20px;
     height: 20px;
-    fill: #e74c3c;
+    fill: #A68B7C;
 }
 
 .search-container {
@@ -420,4 +432,6 @@ footer a:hover {
 .sortable-container {
     position: relative;
     z-index: 1;
-} 
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Inter:wght@400;500&display=swap'); 
