@@ -582,13 +582,73 @@ class TravelPlanner {
         tripsList.innerHTML = savedTrips.map((trip, index) => `
             <a href="#" class="saved-trip" data-index="${index}">
                 ${trip.name}
-                <button class="delete-trip" data-index="${index}" title="Delete trip">
-                    <svg class="delete-icon" viewBox="0 0 24 24">
-                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                    </svg>
-                </button>
+                <div class="trip-actions">
+                    <button class="edit-trip" data-index="${index}" title="Edit trip name">
+                        <svg class="edit-icon" viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                    <button class="delete-trip" data-index="${index}" title="Delete trip">
+                        <svg class="delete-icon" viewBox="0 0 24 24">
+                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                        </svg>
+                    </button>
+                </div>
             </a>
         `).join('');
+
+        // 添加编辑按钮事件监听
+        tripsList.querySelectorAll('.edit-trip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const index = parseInt(btn.dataset.index);
+                const trip = savedTrips[index];
+                
+                // 显示保存行程模态框用于编辑
+                const modal = document.getElementById('save-trip-modal');
+                const input = document.getElementById('trip-name');
+                const confirmBtn = document.getElementById('confirm-save-trip');
+                
+                // 设置标题和按钮文本
+                modal.querySelector('h3').textContent = 'Edit Trip Name';
+                confirmBtn.textContent = 'Update';
+                
+                // 填充当前名称
+                input.value = trip.name;
+                
+                // 显示模态框
+                modal.style.display = 'block';
+                input.focus();
+                
+                // 处理更新
+                const handleUpdate = () => {
+                    const newName = input.value.trim();
+                    if (newName) {
+                        savedTrips[index].name = newName;
+                        localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+                        this.updateSavedTripsList();
+                        modal.style.display = 'none';
+                        
+                        // 重置模态框
+                        modal.querySelector('h3').textContent = 'Save Your Trip';
+                        confirmBtn.textContent = 'Save';
+                        input.value = '';
+                    }
+                };
+                
+                // 更新确认按钮事件
+                confirmBtn.onclick = handleUpdate;
+                
+                // 处理回车键
+                input.onkeypress = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleUpdate();
+                    }
+                };
+            });
+        });
 
         // 修改删除按钮的事件监听
         tripsList.querySelectorAll('.delete-trip').forEach(btn => {
