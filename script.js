@@ -488,14 +488,11 @@ class TravelPlanner {
                     const confirmBtn = document.getElementById('confirm-delete-location');
                     const cancelBtn = document.getElementById('cancel-delete-location');
                     
-                    // 更新确认消息，包含笔记数量
                     message.textContent = `This location contains ${notesCount} note${notesCount > 1 ? 's' : ''}. Are you sure you want to delete it?`;
                     
-                    // 显示模态框
                     deleteModal.style.display = 'block';
                     document.body.style.overflow = 'hidden';
 
-                    // 处理取消按钮
                     const closeModal = () => {
                         deleteModal.style.display = 'none';
                         document.body.style.overflow = '';
@@ -504,14 +501,11 @@ class TravelPlanner {
                     cancelBtn.onclick = closeModal;
                     deleteModal.querySelector('.close-modal').onclick = closeModal;
 
-                    // 处理确认删除按钮
                     confirmBtn.onclick = () => {
-                        this.locations.splice(index, 1);
-                        this.updateRoutes();
+                        this.removeLocation(index);
                         closeModal();
                     };
 
-                    // 点击模态框外部关闭
                     deleteModal.onclick = (e) => {
                         if (e.target === deleteModal) {
                             closeModal();
@@ -519,8 +513,7 @@ class TravelPlanner {
                     };
                 } else {
                     // 如果没有笔记，直接删除
-                    this.locations.splice(index, 1);
-                    this.updateRoutes();
+                    this.removeLocation(index);
                 }
             });
 
@@ -539,6 +532,16 @@ class TravelPlanner {
     removeLocation(index) {
         this.locations.splice(index, 1);
         this.updateRoutes();
+        
+        // 如果当前是已保存的行程，更新 localStorage
+        if (this.currentTripName) {
+            let savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+            const tripIndex = savedTrips.findIndex(trip => trip.name === this.currentTripName);
+            if (tripIndex !== -1) {
+                savedTrips[tripIndex].locations = this.locations;
+                localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+            }
+        }
     }
 
     initializeWeChatModal() {
