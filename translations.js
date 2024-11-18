@@ -20,7 +20,9 @@ const translations = {
         kilometers: "km",
         calculating: "Calculating...",
         termsOfUse: "Terms of Use",
-        privacyPolicy: "Privacy Policy"
+        privacyPolicy: "Privacy Policy",
+        route: "Route",
+        wechatQRCode: "WeChat QR Code"
     },
     zh: {
         title: "城市漫步 - 旅行规划工具",
@@ -43,6 +45,8 @@ const translations = {
         kilometers: "公里",
         calculating: "计算中...",
         termsOfUse: "使用条款",
-        privacyPolicy: "隐私政策"
+        privacyPolicy: "隐私政策",
+        route: "路线",
+        wechatQRCode: "微信二维码"
     }
 }; 

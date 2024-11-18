@@ -292,21 +292,61 @@ footer a:hover {
 }
 
 .language-selector {
+    position: relative;
     margin-left: 2rem;
 }
 
 #language-select {
-    padding: 0.3rem 0.5rem;
+    padding: 0.3rem 2.5rem 0.3rem 2rem;
     border-radius: 16px;
     border: 1px solid #E5E5E5;
     background-color: white;
     font-size: 0.9rem;
     cursor: pointer;
     font-family: "Inter", sans-serif;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 130px;
+}
+
+.language-selector::after {
+    content: "▼";
+    font-size: 0.8rem;
+    color: #666;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.language-selector::before {
+    content: attr(data-icon);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+.language-selector[data-selected="en"]::before {
+    content: "🇺🇸";
+}
+
+.language-selector[data-selected="zh"]::before {
+    content: "🇨🇳";
 }
 
 #language-select:hover {
-    border-color: #3498db;
+    border-color: #A68B7C;
+}
+
+#language-select:focus {
+    outline: none;
+    border-color: #A68B7C;
+    box-shadow: 0 0 0 2px rgba(166, 139, 124, 0.2);
 }
 
 .main-container {
@@ -579,4 +619,10 @@ footer a:hover {
 
 .social-link:hover .wechat-icon {
     fill: #07C160;
+} 
+
+/* 确保文字不会被图标遮挡 */
+#language-select option {
+    padding: 5px;
+    font-size: 0.9rem;
 } 

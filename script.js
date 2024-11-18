@@ -55,7 +55,7 @@ class TravelPlanner {
                     // 更新自动完成的搜索偏好
                     this.autocomplete.setBounds(bounds);
                     
-                    // 可选：添加一个圆形区域来显示搜索范围
+                    // 可选：添加一个圆形区��来显示搜索范围
                     new google.maps.Circle({
                         center: userLocation,
                         radius: 50000  // 50公里半径
@@ -265,7 +265,7 @@ class TravelPlanner {
         const t = translations[this.currentLanguage];
         const template = `
             <div class="route-section" draggable="true">
-                <div class="route-number">Route ${this.locations.indexOf(start) + 1}</div>
+                <div class="route-number">${t.route} ${this.locations.indexOf(start) + 1}</div>
                 <div class="route-info">
                     <div class="location-details">
                         <div class="start-location">
@@ -365,23 +365,53 @@ class TravelPlanner {
 
     initializeLanguageSelector() {
         const languageSelect = document.getElementById('language-select');
+        const languageSelector = document.querySelector('.language-selector');
+        
+        // 设置初始图标
+        languageSelector.setAttribute('data-selected', languageSelect.value);
+        
         languageSelect.addEventListener('change', (e) => {
             this.currentLanguage = e.target.value;
+            // 更新国旗图标
+            languageSelector.setAttribute('data-selected', e.target.value);
             this.updateLanguage();
         });
     }
 
     updateLanguage() {
-        document.title = translations[this.currentLanguage].title;
+        const t = translations[this.currentLanguage];
+        
+        // 更新页面标题
+        document.title = t.title;
+        
+        // 更新导航栏
+        document.querySelector('.logo').textContent = t.title.split('-')[0].trim();
+        const navLinks = document.querySelectorAll('nav ul li a');
+        navLinks[0].textContent = t.home;
+        navLinks[1].textContent = t.about;
+        navLinks[2].textContent = t.contact;
         
         // 更新搜索区域
-        this.searchInput.placeholder = translations[this.currentLanguage].searchPlaceholder;
-        this.addButton.textContent = translations[this.currentLanguage].addLocation;
-        document.querySelector('.location-hint').textContent = translations[this.currentLanguage].locationHint;
+        this.searchInput.placeholder = t.searchPlaceholder;
+        this.addButton.textContent = t.addLocation;
+        document.querySelector('.location-hint').textContent = t.locationHint;
+        
+        // 更新访问顺序面板标题
+        document.querySelector('.visit-order-panel h2').textContent = t.visitOrder;
         
         // 更新总结区域
-        document.querySelector('.summary-section h2').textContent = translations[this.currentLanguage].tripSummary;
-        document.querySelector('.locations-list h3').textContent = translations[this.currentLanguage].visitOrder;
+        document.querySelector('.summary-section h2').textContent = t.tripSummary;
+        const totalStats = document.querySelector('.total-stats').children;
+        totalStats[0].firstChild.textContent = `${t.totalTime}: `;
+        totalStats[1].firstChild.textContent = `${t.totalDistance}: `;
+        
+        // 更新页脚链接
+        const footerLinks = document.querySelectorAll('.footer-links a');
+        footerLinks[0].textContent = t.termsOfUse;
+        footerLinks[1].textContent = t.privacyPolicy;
+        
+        // 更新模态框标题
+        document.querySelector('#wechat-modal h3').textContent = t.wechatQRCode;
         
         // 更新所有路线段
         this.updateRoutes();
