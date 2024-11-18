@@ -152,12 +152,11 @@ class TravelPlanner {
     }
 
     async updateRoutes() {
-        // 检查是否有已保存的行程名称
-        if (this.locations.savedTripName) {
-            const visitOrderPanel = document.querySelector('.visit-order-panel h2');
-            visitOrderPanel.textContent = this.locations.savedTripName;
+        // 检查是否有当前行程名称
+        const visitOrderPanel = document.querySelector('.visit-order-panel h2');
+        if (this.currentTripName) {
+            visitOrderPanel.textContent = this.currentTripName;
         } else {
-            const visitOrderPanel = document.querySelector('.visit-order-panel h2');
             visitOrderPanel.textContent = translations[this.currentLanguage].visitOrder;
         }
         
@@ -707,9 +706,10 @@ class TravelPlanner {
         // 处理行程点击事件
         tripsList.querySelectorAll('.saved-trip').forEach(link => {
             link.addEventListener('click', (e) => {
-                if (!e.target.closest('.delete-trip')) {
+                if (!e.target.closest('.delete-trip') && !e.target.closest('.edit-trip')) {
                     e.preventDefault();
-                    const index = parseInt(e.target.dataset.index);
+                    const index = parseInt(e.target.closest('.saved-trip').dataset.index);
+                    const savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
                     this.loadTrip(savedTrips[index]);
                 }
             });
@@ -717,13 +717,21 @@ class TravelPlanner {
     }
 
     loadTrip(trip) {
+        // 清空当前路线
+        this.locations = [];
+        
+        // 保存行程名称
+        this.currentTripName = trip.name;
+        
         // 更新左侧面板标题
         const visitOrderPanel = document.querySelector('.visit-order-panel h2');
-        visitOrderPanel.textContent = trip.name;  // 将标题改为已保存的行程名称
+        visitOrderPanel.textContent = this.currentTripName;
         
-        // 保存当前加载的行程名称
-        this.locations = trip.locations;
-        this.locations.savedTripName = trip.name;  // 添加这行来保存行程名称
+        // 深拷贝行程数据，避免引用问题
+        this.locations = JSON.parse(JSON.stringify(trip.locations));
+        
+        // 清空搜索框
+        this.searchInput.value = '';
         
         // 更新路线和显示
         this.updateRoutes();
