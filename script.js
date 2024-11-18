@@ -399,7 +399,7 @@ class TravelPlanner {
         this.addButton.textContent = t.addLocation;
         document.querySelector('.location-hint').textContent = t.locationHint;
         
-        // 更新访问顺序面板标题
+        // 更访问顺序面标题
         document.querySelector('.visit-order-panel h2').textContent = t.visitOrder;
         
         // 更新总结区域
@@ -780,7 +780,6 @@ class TravelPlanner {
         }
 
         const locationNotes = this.locations[this.currentEditingLocationIndex].notes || [];
-        console.log('Updating notes list with:', locationNotes); // 调试日志
         
         if (locationNotes.length === 0) {
             notesList.innerHTML = '<div class="no-notes">No notes yet</div>';
@@ -789,20 +788,22 @@ class TravelPlanner {
 
         notesList.innerHTML = locationNotes.map(note => `
             <div class="note-card" data-note-id="${note.id}">
-                <div class="note-content">${note.content}</div>
-                <div class="note-date">${new Date(note.date).toLocaleString()}</div>
-                <div class="note-actions">
-                    <button class="edit-note" title="Edit note">
-                        <svg class="edit-icon" viewBox="0 0 24 24">
-                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                        </svg>
-                    </button>
-                    <button class="delete-note" title="Delete note">
-                        <svg class="delete-icon" viewBox="0 0 24 24">
-                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                        </svg>
-                    </button>
+                <div class="note-header">
+                    <div class="note-date">${new Date(note.date).toLocaleString()}</div>
+                    <div class="note-actions">
+                        <button class="edit-note" title="Edit note">
+                            <svg class="edit-icon" viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </button>
+                        <button class="delete-note" title="Delete note">
+                            <svg class="delete-icon" viewBox="0 0 24 24">
+                                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+                <div class="note-content">${note.content}</div>
             </div>
         `).join('');
 
@@ -816,8 +817,45 @@ class TravelPlanner {
 
         notesList.querySelectorAll('.delete-note').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const noteId = e.target.closest('.note-card').dataset.noteId;
-                this.deleteNote(noteId);
+                const noteCard = e.target.closest('.note-card');
+                const noteId = noteCard.dataset.noteId;
+                const noteContent = noteCard.querySelector('.note-content').textContent;
+                
+                // 显示确认对话框
+                const modal = document.getElementById('delete-trip-modal');
+                const message = modal.querySelector('.delete-trip-message');
+                const confirmBtn = document.getElementById('confirm-delete-trip');
+                const cancelBtn = document.getElementById('cancel-delete-trip');
+                
+                // 修改确认框标题和消息
+                modal.querySelector('h3').textContent = 'Delete Note';
+                message.textContent = 'Are you sure you want to delete this note?';
+                
+                // 显示模态框
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                // 处理取消按钮
+                const closeModal = () => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                };
+
+                cancelBtn.onclick = closeModal;
+                modal.querySelector('.close-modal').onclick = closeModal;
+
+                // 处理确认删除按钮
+                confirmBtn.onclick = () => {
+                    this.deleteNote(noteId);
+                    closeModal();
+                };
+
+                // 点击模态框外部关闭
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                };
             });
         });
     }
