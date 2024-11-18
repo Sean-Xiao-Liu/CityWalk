@@ -21,6 +21,7 @@ class TravelPlanner {
         this.currentLanguage = 'en';
         this.initializeLanguageSelector();
         this.initializeVisitOrderSortable();
+        this.initializeWeChatModal();
     }
 
     initializeAutocomplete() {
@@ -439,6 +440,38 @@ class TravelPlanner {
     removeLocation(index) {
         this.locations.splice(index, 1);
         this.updateRoutes();
+    }
+
+    initializeWeChatModal() {
+        const modal = document.getElementById('wechat-modal');
+        const wechatLink = document.getElementById('wechat-link');
+        const closeBtn = document.querySelector('.close-modal');
+
+        wechatLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = ''; // 恢复滚动
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+
+        // 添加 ESC 键关闭功能
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
     }
 }
 
