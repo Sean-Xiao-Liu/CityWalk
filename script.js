@@ -140,6 +140,19 @@ class TravelPlanner {
 
         await this.updateRoutes();
         this.searchInput.value = '';
+
+        // 如果当前是已保存的行程，更新 localStorage
+        if (this.currentTripName) {
+            let savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+            const tripIndex = savedTrips.findIndex(trip => trip.name === this.currentTripName);
+            if (tripIndex !== -1) {
+                savedTrips[tripIndex].locations = this.locations;
+                localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+                
+                // 可选：更新保存的行程列表显示
+                this.updateSavedTripsList();
+            }
+        }
     }
 
     removeLocation(routeSection) {
@@ -218,7 +231,7 @@ class TravelPlanner {
                 routeSection.querySelector('.travel-time').textContent = 
                     Math.round(duration / 60) + ' ' + t.minutes;
                 routeSection.querySelector('.distance').textContent = 
-                    (distance / 1000).toFixed(1) + ' ' + t.kilometers;
+                    `${(distance / 1000).toFixed(1)} km (${(distance / 1609.34).toFixed(1)} mi)`;
 
                 // 修改地图初始化方式
                 const mapElement = routeSection.querySelector('.route-map');
@@ -283,7 +296,8 @@ class TravelPlanner {
         }
         
         this.totalTime.textContent = timeDisplay;
-        this.totalDistance.textContent = (totalDistance / 1000).toFixed(1) + ' ' + t.kilometers;
+        this.totalDistance.textContent = 
+            `${(totalDistance / 1000).toFixed(1)} km (${(totalDistance / 1609.34).toFixed(1)} mi)`;
 
         // 在更新路线后更新访问顺序面板
         this.updateVisitOrder();
@@ -1097,7 +1111,7 @@ class TravelPlanner {
         // 重置编辑器状态
         editor.value = '';
         saveBtn.textContent = 'Add Note';
-        cancelBtn.style.display = 'none'; // 默认��藏取消按钮
+        cancelBtn.style.display = 'none'; // 默认藏取消按钮
         this.editingNoteId = null;
         
         // 更新笔记列表
