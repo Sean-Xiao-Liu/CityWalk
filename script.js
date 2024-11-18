@@ -490,6 +490,23 @@ class TravelPlanner {
                 </div>
             `;
             
+            // 添加点击事件，滚动到对应的路线部分
+            orderItem.addEventListener('click', (e) => {
+                // 如果点击的是按钮，不执行滚动
+                if (!e.target.closest('button')) {
+                    const routeSections = document.querySelectorAll('.route-section');
+                    if (routeSections[index]) {
+                        routeSections[index].scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                }
+            });
+
+            // 添加鼠标指针样式
+            orderItem.style.cursor = 'pointer';
+            
             // 添加删除按钮事件监听
             const deleteBtn = orderItem.querySelector('.delete-location');
             deleteBtn.addEventListener('click', (e) => {
@@ -1080,7 +1097,7 @@ class TravelPlanner {
         // 重置编辑器状态
         editor.value = '';
         saveBtn.textContent = 'Add Note';
-        cancelBtn.style.display = 'none'; // 默认隐藏取消按钮
+        cancelBtn.style.display = 'none'; // 默认��藏取消按钮
         this.editingNoteId = null;
         
         // 更新笔记列表
@@ -1118,7 +1135,7 @@ class TravelPlanner {
 
 function initializeTravelPlanner() {
     if (typeof google === 'undefined') {
-        console.error('Google Maps API ��能正确加载');
+        console.error('Google Maps API 能正确加载');
         return;
     }
     window.travelPlanner = new TravelPlanner();
