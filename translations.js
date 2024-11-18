@@ -22,7 +22,13 @@ const translations = {
         termsOfUse: "Terms of Use",
         privacyPolicy: "Privacy Policy",
         route: "Route",
-        wechatQRCode: "WeChat QR Code"
+        wechatQRCode: "WeChat QR Code",
+        savedTrips: "Saved Trips",
+        saveTrip: "Save Trip",
+        saveTripTitle: "Save Your Trip",
+        enterTripName: "Enter trip name...",
+        save: "Save",
+        noSavedTrips: "No saved trips"
     },
     zh: {
         title: "城市漫步 - 旅行规划工具",
@@ -47,6 +53,12 @@ const translations = {
         termsOfUse: "使用条款",
         privacyPolicy: "隐私政策",
         route: "路线",
-        wechatQRCode: "微信二维码"
+        wechatQRCode: "微信二维码",
+        savedTrips: "已保存行程",
+        saveTrip: "保存行程",
+        saveTripTitle: "保存您的行程",
+        enterTripName: "输入行程名称...",
+        save: "保存",
+        noSavedTrips: "暂无保存的行程"
     }
 }; 

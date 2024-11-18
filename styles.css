@@ -626,3 +626,133 @@ footer a:hover {
     padding: 5px;
     font-size: 0.9rem;
 } 
+
+/* 保存行程按钮样式 */
+.save-trip-btn {
+    margin-top: 1rem;
+    padding: 0.75rem 2rem;
+    background-color: #A68B7C;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.save-trip-btn:hover {
+    background-color: #8E7567;
+}
+
+/* 保存的行程下拉菜单样式 */
+.saved-trips-dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #FFFFFF;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    z-index: 1001;
+}
+
+.saved-trips-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #4A4A4A;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #FAF7F4;
+}
+
+.delete-trip {
+    color: #e74c3c;
+    margin-left: 1rem;
+    opacity: 0.7;
+}
+
+.delete-trip:hover {
+    opacity: 1;
+}
+
+/* 保存行程模态框样式 */
+.save-trip-modal {
+    width: 400px;
+    height: auto;
+    padding: 2rem;
+}
+
+.save-trip-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+#trip-name {
+    padding: 0.75rem;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: "Inter", sans-serif;
+}
+
+#confirm-save-trip {
+    padding: 0.75rem;
+    background-color: #A68B7C;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+#confirm-save-trip:hover {
+    background-color: #8E7567;
+} 
+
+/* 修改保存行程下拉按钮样式 */
+#saved-trips-btn {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-right: 1.2rem;
+}
+
+#saved-trips-btn::after {
+    content: "▼";
+    font-size: 0.7rem;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+}
+
+/* 移除原有的下拉箭头 */
+.saved-trips-dropdown > a {
+    text-decoration: none;
+}
+
+/* 添加悬停效果 */
+#saved-trips-btn:hover::after {
+    opacity: 1;
+} 

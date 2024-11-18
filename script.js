@@ -22,6 +22,8 @@ class TravelPlanner {
         this.initializeLanguageSelector();
         this.initializeVisitOrderSortable();
         this.initializeWeChatModal();
+        this.initializeSaveTrip();
+        this.loadSavedTrips();
     }
 
     initializeAutocomplete() {
@@ -55,7 +57,7 @@ class TravelPlanner {
                     // 更新自动完成的搜索偏好
                     this.autocomplete.setBounds(bounds);
                     
-                    // 可选：添加一个圆形区��来显示搜索范围
+                    // 可选：添加一个圆形区来显示搜索范围
                     new google.maps.Circle({
                         center: userLocation,
                         radius: 50000  // 50公里半径
@@ -502,6 +504,101 @@ class TravelPlanner {
                 document.body.style.overflow = '';
             }
         });
+    }
+
+    initializeSaveTrip() {
+        const saveBtn = document.getElementById('save-trip');
+        const modal = document.getElementById('save-trip-modal');
+        const closeBtn = modal.querySelector('.close-modal');
+        const confirmBtn = document.getElementById('confirm-save-trip');
+        const tripNameInput = document.getElementById('trip-name');
+
+        saveBtn.addEventListener('click', () => {
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            tripNameInput.value = '';
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            const tripName = tripNameInput.value.trim();
+            if (tripName) {
+                this.saveTrip(tripName);
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+                tripNameInput.value = '';
+            }
+        });
+    }
+
+    saveTrip(name) {
+        const trip = {
+            name,
+            locations: this.locations,
+            date: new Date().toISOString()
+        };
+
+        let savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+        savedTrips.push(trip);
+        localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+        
+        this.updateSavedTripsList();
+    }
+
+    loadSavedTrips() {
+        this.updateSavedTripsList();
+    }
+
+    updateSavedTripsList() {
+        const savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+        const tripsList = document.getElementById('saved-trips-list');
+        const t = translations[this.currentLanguage];
+
+        if (savedTrips.length === 0) {
+            tripsList.innerHTML = `<a href="#" class="no-trips">${t.noSavedTrips}</a>`;
+            return;
+        }
+
+        tripsList.innerHTML = savedTrips.map((trip, index) => `
+            <a href="#" class="saved-trip" data-index="${index}">
+                ${trip.name}
+                <span class="delete-trip" data-index="${index}">×</span>
+            </a>
+        `).join('');
+
+        // 添加点击事件处理
+        tripsList.querySelectorAll('.saved-trip').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('delete-trip')) {
+                    const index = e.target.dataset.index;
+                    this.loadTrip(savedTrips[index]);
+                }
+            });
+        });
+
+        tripsList.querySelectorAll('.delete-trip').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = e.target.dataset.index;
+                this.deleteTrip(index);
+            });
+        });
+    }
+
+    loadTrip(trip) {
+        this.locations = trip.locations;
+        this.updateRoutes();
+    }
+
+    deleteTrip(index) {
+        let savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+        savedTrips.splice(index, 1);
+        localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+        this.updateSavedTripsList();
     }
 }
 

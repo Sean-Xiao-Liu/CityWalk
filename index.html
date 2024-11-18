@@ -11,6 +11,12 @@
         <nav>
             <div class="logo">City  Walk</div>
             <ul>
+                <li class="saved-trips-dropdown">
+                    <a href="#" id="saved-trips-btn">Saved Trips</a>
+                    <div class="dropdown-content" id="saved-trips-list">
+                        <!-- 保存的行程将在这里动态显示 -->
+                    </div>
+                </li>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -50,6 +56,7 @@
                         <p>Total Time: <span id="total-time">0 minutes</span></p>
                         <p>Total Distance: <span id="total-distance">0 km</span></p>
                     </div>
+                    <button id="save-trip" class="save-trip-btn">Save Trip</button>
                 </div>
             </section>
         </div>
@@ -83,6 +90,17 @@
             <span class="close-modal">&times;</span>
             <h3>WeChat QR Code</h3>
             <img src="images/IMG_4651.JPG" alt="WeChat QR Code" class="qr-code">
+        </div>
+    </div>
+
+    <div id="save-trip-modal" class="modal">
+        <div class="modal-content save-trip-modal">
+            <span class="close-modal">&times;</span>
+            <h3>Save Your Trip</h3>
+            <div class="save-trip-form">
+                <input type="text" id="trip-name" placeholder="Enter trip name...">
+                <button id="confirm-save-trip">Save</button>
+            </div>
         </div>
     </div>
 
