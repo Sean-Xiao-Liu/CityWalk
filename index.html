@@ -145,6 +145,22 @@
         </div>
     </div>
 
+    <div id="editor-modal" class="modal">
+        <div class="modal-content editor-modal">
+            <span class="close-modal">&times;</span>
+            <h3>Location Notes</h3>
+            <div class="editor-container">
+                <textarea id="note-editor" placeholder="Write your notes here..."></textarea>
+                <div class="notes-list">
+                    <!-- 笔记卡片将在这里动态生成 -->
+                </div>
+            </div>
+            <div class="editor-actions">
+                <button id="save-note" class="save-notes-btn">Add Note</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-auth.js"></script>
     <script src="config.js"></script>
