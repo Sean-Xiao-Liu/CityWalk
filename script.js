@@ -399,7 +399,7 @@ class TravelPlanner {
         this.addButton.textContent = t.addLocation;
         document.querySelector('.location-hint').textContent = t.locationHint;
         
-        // 更顺序面标
+        // 更顺标
         document.querySelector('.visit-order-panel h2').textContent = t.visitOrder;
         
         // 更新总结区域
@@ -744,27 +744,44 @@ class TravelPlanner {
     saveLocationNote() {
         if (this.currentEditingLocationIndex !== null) {
             const editor = document.getElementById('note-editor');
+            const saveBtn = document.getElementById('save-note');
+            const cancelBtn = document.getElementById('cancel-note');
             const noteContent = editor.value.trim();
             
             if (noteContent) {
-                // 创建新笔记
-                const newNote = {
-                    content: noteContent,
-                    date: new Date().toISOString(),
-                    id: Date.now() // 用时间戳作为唯一ID
-                };
+                if (this.editingNoteId) {
+                    // 更新现有笔记
+                    const notes = this.locations[this.currentEditingLocationIndex].notes;
+                    const index = notes.findIndex(n => n.id.toString() === this.editingNoteId);
+                    if (index !== -1) {
+                        notes[index] = {
+                            ...notes[index],
+                            content: noteContent,
+                            date: new Date().toISOString()
+                        };
+                    }
+                    this.editingNoteId = null;
+                } else {
+                    // 创建新笔记
+                    const newNote = {
+                        content: noteContent,
+                        date: new Date().toISOString(),
+                        id: Date.now()
+                    };
 
-                // 初始化或添加到现有笔记数组
-                if (!this.locations[this.currentEditingLocationIndex].notes) {
-                    this.locations[this.currentEditingLocationIndex].notes = [];
+                    if (!this.locations[this.currentEditingLocationIndex].notes) {
+                        this.locations[this.currentEditingLocationIndex].notes = [];
+                    }
+                    this.locations[this.currentEditingLocationIndex].notes.push(newNote);
                 }
-                this.locations[this.currentEditingLocationIndex].notes.push(newNote);
 
                 // 更新显示
                 this.updateNotesList();
                 
-                // 清空编辑器
+                // 重置编辑器和按钮
                 editor.value = '';
+                saveBtn.textContent = 'Add Note';
+                cancelBtn.style.display = 'none';
                 
                 // 如果是已保存的行程，更新localStorage
                 if (this.locations[this.currentEditingLocationIndex].savedTripId) {
@@ -863,67 +880,74 @@ class TravelPlanner {
         });
     }
 
-    // 添加编辑笔记的方法
+    // 修改编辑笔记的方法
     editNote(noteId) {
         const notes = this.locations[this.currentEditingLocationIndex].notes;
         const note = notes.find(n => n.id.toString() === noteId);
         if (note) {
             const editor = document.getElementById('note-editor');
+            const saveBtn = document.getElementById('save-note');
+            const cancelBtn = document.getElementById('cancel-note');
+            
             editor.value = note.content;
-            // 删除原笔记
-            this.deleteNote(noteId);
-            // 聚焦到编辑器
+            saveBtn.textContent = 'Update Note';
+            cancelBtn.style.display = 'block'; // 编辑时显示取消按钮
+            
+            this.editingNoteId = noteId;
             editor.focus();
         }
     }
 
-    // 添加删除笔记的方法
-    deleteNote(noteId) {
-        const notes = this.locations[this.currentEditingLocationIndex].notes;
-        const index = notes.findIndex(n => n.id.toString() === noteId);
-        if (index !== -1) {
-            notes.splice(index, 1);
-            this.updateNotesList();
-            
-            // 如果是已保存的行程，更新localStorage
-            if (this.locations[this.currentEditingLocationIndex].savedTripId) {
-                this.updateSavedTrip(this.locations[this.currentEditingLocationIndex].savedTripId);
-            }
-        }
+    // 修改取消编辑的方法
+    cancelNote() {
+        const editor = document.getElementById('note-editor');
+        const saveBtn = document.getElementById('save-note');
+        const cancelBtn = document.getElementById('cancel-note');
+        
+        editor.value = '';
+        saveBtn.textContent = 'Add Note';
+        cancelBtn.style.display = 'none'; // 取消后隐藏取消按钮
+        
+        this.editingNoteId = null;
     }
 
     // 修改打开编辑器的方法
     openNoteEditor(locationIndex) {
         const modal = document.getElementById('editor-modal');
         const editor = document.getElementById('note-editor');
+        const saveBtn = document.getElementById('save-note');
+        const cancelBtn = document.getElementById('cancel-note');
+        
         this.currentEditingLocationIndex = locationIndex;
         
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden';
         
-        // 清空编辑器
+        // 重置编辑器状态
         editor.value = '';
-        
-        // 检查是否有现有笔记并更新列表
-        if (this.locations[locationIndex].notes && this.locations[locationIndex].notes.length > 0) {
-            console.log('Found existing notes:', this.locations[locationIndex].notes); // 调试日志
-        }
+        saveBtn.textContent = 'Add Note';
+        cancelBtn.style.display = 'none'; // 默认隐藏取消按钮
+        this.editingNoteId = null;
         
         // 更新笔记列表
         this.updateNotesList();
 
         // 添加事件监听
         const closeBtn = modal.querySelector('.close-modal');
-        const saveBtn = document.getElementById('save-note');
 
         closeBtn.onclick = () => {
             modal.style.display = 'none';
             document.body.style.overflow = '';
             this.currentEditingLocationIndex = null;
+            this.editingNoteId = null;
         };
 
         saveBtn.onclick = () => {
             this.saveLocationNote();
+        };
+
+        cancelBtn.onclick = () => {
+            this.cancelNote();
         };
 
         // 点击模态框外部关闭
@@ -932,6 +956,7 @@ class TravelPlanner {
                 modal.style.display = 'none';
                 document.body.style.overflow = '';
                 this.currentEditingLocationIndex = null;
+                this.editingNoteId = null;
             }
         };
     }

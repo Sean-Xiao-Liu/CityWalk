@@ -1006,33 +1006,22 @@ footer a:hover {
     background-color: #8E7567;
 } 
 
-/* 编辑器模态框样式 */
-.editor-modal {
-    width: 800px;
-    height: 80vh;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    background: white;
-}
-
-.editor-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    overflow-y: auto;
-    padding-right: 1rem;
-}
-
+/* 修改编辑器输入区域和按钮布局 */
 .editor-input {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     background-color: white;
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: relative; /* 添加相对定位 */
+}
+
+.editor-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end; /* 靠右对齐 */
+    margin-top: 1rem; /* 与文本区域保持一定距离 */
 }
 
 #note-editor {
@@ -1047,10 +1036,14 @@ footer a:hover {
     line-height: 1.6;
 }
 
-#note-editor:focus {
-    outline: none;
-    border-color: #A68B7C;
-    box-shadow: 0 0 0 2px rgba(166, 139, 124, 0.1);
+/* 修改按钮样式 */
+.editor-buttons .secondary-btn,
+.editor-buttons .save-notes-btn {
+    margin: 0; /* 移除默认边距 */
+}
+
+.editor-buttons .save-notes-btn {
+    align-self: center; /* 移除之前的 flex-end 对齐 */
 }
 
 /* 笔记列表样式 */
