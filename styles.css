@@ -412,36 +412,44 @@ footer a:hover {
 .visit-order-item .location-info {
     flex: 1;
     min-width: 0;
-    padding-right: 40px;
+    padding-right: 60px;
 }
 
-.visit-order-item .delete-location {
+.visit-order-item .icons-container {
     position: absolute;
-    right: 0.5rem;
+    right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.visit-order-item .delete-location,
+.visit-order-item .edit-location {
+    width: 30px;
+    height: 30px;
     border: none;
     background: none;
     cursor: pointer;
     padding: 0;
     opacity: 0.6;
-    transition: opacity 0.2s;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.visit-order-item .delete-location:hover {
+.visit-order-item .delete-location:hover,
+.visit-order-item .edit-location:hover {
     opacity: 1;
 }
 
-.visit-order-item .delete-icon {
-    width: 16px;
-    height: 16px;
+.visit-order-item .delete-icon,
+.visit-order-item .edit-icon {
+    width: 24px;
+    height: 24px;
     fill: #A68B7C;
-}
-
-.visit-order-item:hover .delete-location {
-    opacity: 0.8;
 }
 
 .itinerary-builder {

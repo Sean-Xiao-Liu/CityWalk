@@ -28,7 +28,7 @@ class TravelPlanner {
     }
 
     initializeAutocomplete() {
-        // 首先���建基本的自动完成对象
+        // 首先建基本的自动完成对象
         this.autocomplete = new google.maps.places.Autocomplete(this.searchInput, {
             types: ['establishment', 'geocode'],
             fields: ['name', 'geometry', 'formatted_address', 'place_id']
@@ -451,11 +451,18 @@ class TravelPlanner {
                     <div class="location-name">${location.name}</div>
                     <div class="location-address">${location.address || ''}</div>
                 </div>
-                <button class="delete-location" data-index="${index}" title="Delete location">
-                    <svg class="delete-icon" viewBox="0 0 24 24">
-                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                    </svg>
-                </button>
+                <div class="icons-container">
+                    <button class="edit-location" data-index="${index}" title="Edit location">
+                        <svg class="edit-icon" viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                    <button class="delete-location" data-index="${index}" title="Delete location">
+                        <svg class="delete-icon" viewBox="0 0 24 24">
+                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                        </svg>
+                    </button>
+                </div>
             `;
             
             // 添加删除按钮事件监听
@@ -464,6 +471,13 @@ class TravelPlanner {
                 e.stopPropagation();
                 this.locations.splice(index, 1);
                 this.updateRoutes();
+            });
+
+            // 添加编辑按钮事件监听
+            const editBtn = orderItem.querySelector('.edit-location');
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // 这里可以添加编辑功能的处理逻辑
             });
             
             visitOrderList.appendChild(orderItem);
