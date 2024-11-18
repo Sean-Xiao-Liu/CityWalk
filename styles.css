@@ -1197,3 +1197,30 @@ footer a:hover {
     height: 16px;
     fill: #A68B7C;
 } 
+
+/* 修改访问顺序项中的地点名称和地址样式 */
+.visit-order-item .location-name {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.visit-order-item .location-address {
+    font-size: 0.7rem;
+    color: #666;
+}
+
+/* 修改路线部分的地点名称和地址样式 */
+.route-section .location-name {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.route-section .location-address {
+    font-size: 0.7rem;
+    color: #666;
+    line-height: 1.4;
+} 
