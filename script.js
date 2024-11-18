@@ -477,8 +477,51 @@ class TravelPlanner {
             const deleteBtn = orderItem.querySelector('.delete-location');
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.locations.splice(index, 1);
-                this.updateRoutes();
+                const index = parseInt(e.target.closest('.delete-location').dataset.index);
+                const location = this.locations[index];
+                const notesCount = location.notes ? location.notes.length : 0;
+
+                // 如果地点有笔记，显示确认对话框
+                if (notesCount > 0) {
+                    const deleteModal = document.getElementById('delete-location-modal');
+                    const message = deleteModal.querySelector('.delete-message');
+                    const confirmBtn = document.getElementById('confirm-delete-location');
+                    const cancelBtn = document.getElementById('cancel-delete-location');
+                    
+                    // 更新确认消息，包含笔记数量
+                    message.textContent = `This location contains ${notesCount} note${notesCount > 1 ? 's' : ''}. Are you sure you want to delete it?`;
+                    
+                    // 显示模态框
+                    deleteModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+
+                    // 处理取消按钮
+                    const closeModal = () => {
+                        deleteModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    };
+
+                    cancelBtn.onclick = closeModal;
+                    deleteModal.querySelector('.close-modal').onclick = closeModal;
+
+                    // 处理确认删除按钮
+                    confirmBtn.onclick = () => {
+                        this.locations.splice(index, 1);
+                        this.updateRoutes();
+                        closeModal();
+                    };
+
+                    // 点击模态框外部关闭
+                    deleteModal.onclick = (e) => {
+                        if (e.target === deleteModal) {
+                            closeModal();
+                        }
+                    };
+                } else {
+                    // 如果没有笔记，直接删除
+                    this.locations.splice(index, 1);
+                    this.updateRoutes();
+                }
             });
 
             // 添加编辑按钮事件监听

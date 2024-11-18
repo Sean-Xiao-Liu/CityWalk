@@ -908,45 +908,35 @@ footer a:hover {
 } 
 
 /* 修改删除确认模态框样式 */
-#delete-note-modal,
-#delete-trip-modal {
-    background-color: transparent; /* 移除黑色半透明背景 */
-    backdrop-filter: blur(5px); /* 添加模糊效果 */
-    -webkit-backdrop-filter: blur(5px); /* Safari 支持 */
-}
-
 .delete-modal {
-    width: 400px;
+    width: 600px;
     height: auto;
-    padding: 2rem;
-    background: white; /* 确保模态框内容区域背景为白色 */
+    padding: 3rem;
+    background: white;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* 移除之前的遮罩层 */
-#delete-trip-modal::before,
-#delete-note-modal::before {
-    display: none;
+/* 调整删除确认消息的样式 */
+.delete-message {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin: 1.5rem 0;
+    color: #4A4A4A;
+    text-align: center;
 }
 
-/* 调整模态框内容的位置 */
-#delete-trip-modal .modal-content,
-#delete-note-modal .modal-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    z-index: 1011;
-} 
+/* 调整删除确认模态框标题样式 */
+.delete-modal h3 {
+    text-align: center;
+}
 
-/* 修改删除确认模态框的按钮样式 */
+/* 调整按钮样式 */
 .delete-buttons {
     display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 2rem;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
 }
 
 .secondary-btn {
@@ -959,6 +949,7 @@ footer a:hover {
     font-family: "Inter", sans-serif;
     font-weight: 500;
     transition: all 0.3s;
+    min-width: 120px;
 }
 
 .secondary-btn:hover {
@@ -976,11 +967,12 @@ footer a:hover {
     font-family: "Inter", sans-serif;
     font-weight: 500;
     transition: background-color 0.3s;
+    min-width: 120px;
 }
 
 .delete-btn:hover {
     background-color: #c0392b;
-}
+} 
 
 /* 修改保存笔记按钮样式 */
 .save-notes-btn {
