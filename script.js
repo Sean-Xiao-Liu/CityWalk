@@ -24,6 +24,7 @@ class TravelPlanner {
         this.initializeWeChatModal();
         this.initializeSaveTrip();
         this.loadSavedTrips();
+        this.initializeAuth();
     }
 
     initializeAutocomplete() {
@@ -566,7 +567,7 @@ class TravelPlanner {
         tripsList.innerHTML = savedTrips.map((trip, index) => `
             <a href="#" class="saved-trip" data-index="${index}">
                 ${trip.name}
-                <span class="delete-trip" data-index="${index}">×</span>
+                <span class="delete-trip" data-index="${index}" title="Delete trip">×</span>
             </a>
         `).join('');
 
@@ -580,11 +581,17 @@ class TravelPlanner {
             });
         });
 
+        // 修改删除按钮的点击事件
         tripsList.querySelectorAll('.delete-trip').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const index = e.target.dataset.index;
-                this.deleteTrip(index);
+                const tripName = savedTrips[index].name;
+                
+                // 添加确认对话框
+                if (confirm(`Are you sure you want to delete "${tripName}"?`)) {
+                    this.deleteTrip(index);
+                }
             });
         });
     }
@@ -599,6 +606,87 @@ class TravelPlanner {
         savedTrips.splice(index, 1);
         localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
         this.updateSavedTripsList();
+    }
+
+    initializeAuth() {
+        // 初始化 Firebase
+        const firebaseConfig = {
+            // 你的 Firebase 配置
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-app.firebaseapp.com",
+            projectId: "your-project-id",
+            // ... 其他配置
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // 初始化登录模态框
+        const loginBtn = document.getElementById('login-btn');
+        const loginModal = document.getElementById('login-modal');
+        const closeBtn = loginModal.querySelector('.close-modal');
+        const googleLoginBtn = document.getElementById('google-login');
+        const appleLoginBtn = document.getElementById('apple-login');
+        const userProfile = document.querySelector('.user-profile');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // 检查登录状态
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // 用户已登录
+                document.getElementById('login-btn').classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                document.getElementById('user-avatar').src = user.photoURL || 'default-avatar.png';
+                document.getElementById('user-name').textContent = user.displayName;
+            } else {
+                // 用户未登录
+                document.getElementById('login-btn').classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        });
+
+        // 登录按钮点击事件
+        loginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        });
+
+        // 关闭模态框
+        closeBtn.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            document.body.style.overflow = '';
+        });
+
+        // Google 登录
+        googleLoginBtn.addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await firebase.auth().signInWithPopup(provider);
+                loginModal.style.display = 'none';
+                document.body.style.overflow = '';
+            } catch (error) {
+                console.error('Google login error:', error);
+            }
+        });
+
+        // Apple 登录
+        appleLoginBtn.addEventListener('click', async () => {
+            const provider = new firebase.auth.OAuthProvider('apple.com');
+            try {
+                await firebase.auth().signInWithPopup(provider);
+                loginModal.style.display = 'none';
+                document.body.style.overflow = '';
+            } catch (error) {
+                console.error('Apple login error:', error);
+            }
+        });
+
+        // 登出
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await firebase.auth().signOut();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        });
     }
 }
 

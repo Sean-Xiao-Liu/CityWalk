@@ -756,3 +756,113 @@ footer a:hover {
 #saved-trips-btn:hover::after {
     opacity: 1;
 } 
+
+/* 登录按钮和用户信息样式 */
+.auth-section {
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
+}
+
+.login-btn {
+    padding: 0.5rem 1.5rem;
+    background-color: #A68B7C;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+    background-color: #8E7567;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-profile.hidden {
+    display: none;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#user-name {
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    color: #4A4A4A;
+}
+
+.logout-btn {
+    padding: 0.3rem 1rem;
+    background-color: #f8f9fa;
+    color: #4A4A4A;
+    border: 1px solid #E5E5E5;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #e9ecef;
+    border-color: #A68B7C;
+}
+
+/* 登录模态框样式 */
+.login-modal {
+    width: 400px;
+    height: auto;
+    padding: 2rem;
+}
+
+.login-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.social-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    background-color: white;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.social-login-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #A68B7C;
+}
+
+.social-login-btn .social-icon {
+    width: 24px;
+    height: 24px;
+}
+
+#google-login .social-icon {
+    fill: #4285F4;
+}
+
+#apple-login .social-icon {
+    fill: #000000;
+} 
