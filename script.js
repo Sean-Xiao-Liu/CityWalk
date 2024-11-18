@@ -152,6 +152,15 @@ class TravelPlanner {
     }
 
     async updateRoutes() {
+        // 检查是否有已保存的行程名称
+        if (this.locations.savedTripName) {
+            const visitOrderPanel = document.querySelector('.visit-order-panel h2');
+            visitOrderPanel.textContent = this.locations.savedTripName;
+        } else {
+            const visitOrderPanel = document.querySelector('.visit-order-panel h2');
+            visitOrderPanel.textContent = translations[this.currentLanguage].visitOrder;
+        }
+        
         // 清空现有路线
         this.locationsContainer.innerHTML = '';
         this.maps.clear();
@@ -399,7 +408,7 @@ class TravelPlanner {
         this.addButton.textContent = t.addLocation;
         document.querySelector('.location-hint').textContent = t.locationHint;
         
-        // 更顺��
+        // 更顺
         document.querySelector('.visit-order-panel h2').textContent = t.visitOrder;
         
         // 更新总结区域
@@ -708,7 +717,15 @@ class TravelPlanner {
     }
 
     loadTrip(trip) {
+        // 更新左侧面板标题
+        const visitOrderPanel = document.querySelector('.visit-order-panel h2');
+        visitOrderPanel.textContent = trip.name;  // 将标题改为已保存的行程名称
+        
+        // 保存当前加载的行程名称
         this.locations = trip.locations;
+        this.locations.savedTripName = trip.name;  // 添加这行来保存行程名称
+        
+        // 更新路线和显示
         this.updateRoutes();
     }
 
@@ -901,7 +918,7 @@ class TravelPlanner {
                 const noteCard = e.target.closest('.note-card');
                 const noteId = noteCard.dataset.noteId;
                 
-                // 显示删除笔记确认对话框
+                // 显示删除笔记确认话框
                 const deleteModal = document.getElementById('delete-note-modal');
                 const confirmBtn = document.getElementById('confirm-delete-note');
                 const cancelBtn = document.getElementById('cancel-delete-note');
