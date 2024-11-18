@@ -150,13 +150,13 @@
             <span class="close-modal">&times;</span>
             <h3>Location Notes</h3>
             <div class="editor-container">
-                <textarea id="note-editor" placeholder="Write your notes here..."></textarea>
-                <div class="notes-list">
-                    <!-- 笔记卡片将在这里动态生成 -->
+                <div class="editor-input">
+                    <textarea id="note-editor" placeholder="Write your notes here..."></textarea>
+                    <button id="save-note" class="save-notes-btn">Add Note</button>
                 </div>
-            </div>
-            <div class="editor-actions">
-                <button id="save-note" class="save-notes-btn">Add Note</button>
+                <div class="notes-list">
+                    <!-- Notes will be displayed here -->
+                </div>
             </div>
         </div>
     </div>

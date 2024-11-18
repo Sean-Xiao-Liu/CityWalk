@@ -929,10 +929,10 @@ footer a:hover {
     background-color: #c0392b;
 }
 
-/* 编辑器模态框样式 */
+/* 修改编辑器模态框样式 */
 .editor-modal {
     width: 800px;
-    height: 600px;
+    height: 80vh;
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -940,97 +940,58 @@ footer a:hover {
 
 .editor-container {
     flex: 1;
-    margin: 1.5rem 0;
-    border-radius: 12px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.editor-input {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 #note-editor {
     width: 100%;
-    height: 100%;
+    min-height: 150px;
     padding: 1rem;
     border: 1px solid #E5E5E5;
     border-radius: 12px;
-    resize: none;
+    resize: vertical;
     font-family: "Inter", sans-serif;
     font-size: 1rem;
     line-height: 1.6;
-    background-color: white;
 }
 
-#note-editor:focus {
-    outline: none;
-    border-color: #A68B7C;
-    box-shadow: 0 0 0 2px rgba(166, 139, 124, 0.2);
-}
-
-.editor-actions {
-    margin-top: 1rem;
-    text-align: right;
-}
-
-.save-notes-btn {
-    padding: 0.75rem 2rem;
-    background-color: #A68B7C;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-family: "Inter", sans-serif;
-    font-weight: 500;
-    transition: background-color 0.3s;
-}
-
-.save-notes-btn:hover {
-    background-color: #8E7567;
-}
-
-/* 移动设备适配 */
-@media (max-width: 900px) {
-    .editor-modal {
-        width: 90%;
-        height: 90vh;
-    }
-} 
-
-/* 笔记列表样式 */
 .notes-list {
-    margin-top: 2rem;
-    max-height: 300px;
-    overflow-y: auto;
-    padding-right: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-/* 无笔记时的提示样式 */
-.no-notes {
-    text-align: center;
-    color: #666;
-    padding: 1rem;
-    font-style: italic;
-}
-
-/* 笔记卡片样式优化 */
 .note-card {
     background-color: #fff;
     border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     position: relative;
 }
 
-.note-card .note-content {
-    margin-right: 60px; /* 为操作按钮留出空间 */
+.note-content {
+    margin-right: 60px;
+    white-space: pre-wrap;
     word-break: break-word;
 }
 
-.note-card .note-date {
+.note-date {
+    margin-top: 0.5rem;
     font-size: 0.8rem;
     color: #888;
-    margin-top: 0.5rem;
 }
 
-.note-card .note-actions {
+.note-actions {
     position: absolute;
     right: 1rem;
     top: 1rem;
@@ -1038,39 +999,16 @@ footer a:hover {
     gap: 0.5rem;
 }
 
-.note-card .edit-note,
-.note-card .delete-note {
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 0;
-    opacity: 0.6;
-    transition: opacity 0.3s;
+.save-notes-btn {
+    align-self: flex-end;
+    padding: 0.75rem 2rem;
 }
 
-.note-card .edit-note:hover,
-.note-card .delete-note:hover {
-    opacity: 1;
-}
-
-.note-card .edit-icon,
-.note-card .delete-icon {
-    width: 16px;
-    height: 16px;
-    fill: #A68B7C;
-}
-
-/* 修改编辑器容器样式 */
-.editor-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    height: 100%;
-}
-
-#note-editor {
-    min-height: 150px;
-    flex-shrink: 0;
+.no-notes {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    font-style: italic;
 } 
