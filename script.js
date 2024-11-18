@@ -562,7 +562,10 @@ class TravelPlanner {
     saveTrip(name) {
         const trip = {
             name,
-            locations: this.locations,
+            locations: this.locations.map(location => ({
+                ...location,
+                notes: location.notes || [] // 确保包含每个地点的笔记
+            })),
             date: new Date().toISOString()
         };
 
@@ -727,8 +730,11 @@ class TravelPlanner {
         const visitOrderPanel = document.querySelector('.visit-order-panel h2');
         visitOrderPanel.textContent = this.currentTripName;
         
-        // 深拷贝行程数据，避免引用问题
-        this.locations = JSON.parse(JSON.stringify(trip.locations));
+        // 深拷贝行程数据，包括笔记
+        this.locations = JSON.parse(JSON.stringify(trip.locations.map(location => ({
+            ...location,
+            notes: location.notes || [] // 确保每个地点都有 notes 数组
+        }))));
         
         // 清空搜索框
         this.searchInput.value = '';
