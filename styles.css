@@ -675,7 +675,20 @@ footer a:hover {
     display: block;
 }
 
-.dropdown-content a {
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #FFFFFF;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    z-index: 1001;
+}
+
+.saved-trip {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -685,8 +698,33 @@ footer a:hover {
     transition: background-color 0.2s;
 }
 
-.dropdown-content a:hover {
+.saved-trip:hover {
     background-color: #FAF7F4;
+}
+
+.delete-trip {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+}
+
+.delete-trip:hover {
+    opacity: 1;
+}
+
+.delete-trip .delete-icon {
+    width: 16px;
+    height: 16px;
+    fill: #A68B7C;
 }
 
 .delete-trip {
@@ -875,32 +913,44 @@ footer a:hover {
     fill: #000000;
 } 
 
-/* 删除确认模态框样式 */
-.delete-trip-modal {
+/* 修改删除确认模态框样式 */
+#delete-note-modal,
+#delete-trip-modal {
+    background-color: transparent; /* 移除黑色半透明背景 */
+    backdrop-filter: blur(5px); /* 添加模糊效果 */
+    -webkit-backdrop-filter: blur(5px); /* Safari 支持 */
+}
+
+.delete-modal {
     width: 400px;
     height: auto;
     padding: 2rem;
-    position: relative;
-    z-index: 1003;
+    background: white; /* 确保模态框内容区域背景为白色 */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-#delete-trip-modal .modal-content {
+/* 移除之前的遮罩层 */
+#delete-trip-modal::before,
+#delete-note-modal::before {
+    display: none;
+}
+
+/* 调整模态框内容的位置 */
+#delete-trip-modal .modal-content,
+#delete-note-modal .modal-content {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
+    margin: 0;
+    z-index: 1011;
+} 
 
-.delete-trip-message {
-    margin: 1.5rem 0;
-    color: #4A4A4A;
-    font-size: 1.1rem;
-    font-family: "Inter", sans-serif;
-}
-
-.delete-trip-buttons {
+/* 修改删除确认模态框的按钮样式 */
+.delete-buttons {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 1rem;
     margin-top: 2rem;
 }
@@ -910,7 +960,7 @@ footer a:hover {
     background-color: #f8f9fa;
     color: #4A4A4A;
     border: 1px solid #E5E5E5;
-    border-radius: 12px;
+    border-radius: 20px;
     cursor: pointer;
     font-family: "Inter", sans-serif;
     font-weight: 500;
@@ -927,7 +977,7 @@ footer a:hover {
     background-color: #e74c3c;
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 20px;
     cursor: pointer;
     font-family: "Inter", sans-serif;
     font-weight: 500;
@@ -938,14 +988,32 @@ footer a:hover {
     background-color: #c0392b;
 }
 
-/* 修改编辑器模态框样式 */
+/* 修改保存笔记按钮样式 */
+.save-notes-btn {
+    padding: 0.75rem 2rem;
+    background-color: #A68B7C;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    align-self: flex-end;
+}
+
+.save-notes-btn:hover {
+    background-color: #8E7567;
+} 
+
+/* 编辑器模态框样式 */
 .editor-modal {
     width: 800px;
     height: 80vh;
     padding: 2rem;
     display: flex;
     flex-direction: column;
-    z-index: 1001;
+    background: white;
 }
 
 .editor-container {
@@ -961,7 +1029,6 @@ footer a:hover {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-bottom: 2rem;
     background-color: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -978,7 +1045,6 @@ footer a:hover {
     font-family: "Inter", sans-serif;
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 0.5rem;
 }
 
 #note-editor:focus {
@@ -987,6 +1053,7 @@ footer a:hover {
     box-shadow: 0 0 0 2px rgba(166, 139, 124, 0.1);
 }
 
+/* 笔记列表样式 */
 .notes-list {
     display: flex;
     flex-direction: column;
@@ -994,7 +1061,7 @@ footer a:hover {
 }
 
 .note-card {
-    background-color: #fff;
+    background-color: white;
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -1053,24 +1120,6 @@ footer a:hover {
     color: #4A4A4A;
 }
 
-.save-notes-btn {
-    padding: 0.75rem 2rem;
-    background-color: #A68B7C;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: "Inter", sans-serif;
-    font-weight: 500;
-    transition: background-color 0.3s;
-    align-self: flex-end;
-    margin-top: 1rem;
-}
-
-.save-notes-btn:hover {
-    background-color: #8E7567;
-}
-
 .no-notes {
     text-align: center;
     color: #666;
@@ -1078,4 +1127,12 @@ footer a:hover {
     background: #f8f9fa;
     border-radius: 12px;
     font-style: italic;
+}
+
+/* 移动设备适配 */
+@media (max-width: 900px) {
+    .editor-modal {
+        width: 90%;
+        height: 90vh;
+    }
 } 
