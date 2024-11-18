@@ -265,7 +265,24 @@ class TravelPlanner {
 
         // 更新总计
         const t = translations[this.currentLanguage];
-        this.totalTime.textContent = Math.round(totalTime / 60) + ' ' + t.minutes;
+        
+        // 转换总时间为小时和分钟
+        const hours = Math.floor(totalTime / 3600);
+        const minutes = Math.round((totalTime % 3600) / 60);
+        
+        // 根据语言设置不同的显示格式
+        let timeDisplay;
+        if (this.currentLanguage === 'zh') {
+            timeDisplay = hours > 0 ? 
+                `${hours} 小时 ${minutes} 分钟` : 
+                `${minutes} 分钟`;
+        } else {
+            timeDisplay = hours > 0 ? 
+                `${hours}h ${minutes}m` : 
+                `${minutes}m`;
+        }
+        
+        this.totalTime.textContent = timeDisplay;
         this.totalDistance.textContent = (totalDistance / 1000).toFixed(1) + ' ' + t.kilometers;
 
         // 在更新路线后更新访问顺序面板
@@ -1101,7 +1118,7 @@ class TravelPlanner {
 
 function initializeTravelPlanner() {
     if (typeof google === 'undefined') {
-        console.error('Google Maps API 未能正确加载');
+        console.error('Google Maps API ��能正确加载');
         return;
     }
     window.travelPlanner = new TravelPlanner();
