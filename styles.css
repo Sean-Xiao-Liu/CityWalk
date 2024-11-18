@@ -866,3 +866,57 @@ footer a:hover {
 #apple-login .social-icon {
     fill: #000000;
 } 
+
+/* 删除确认模态框样式 */
+.delete-trip-modal {
+    width: 400px;
+    height: auto;
+    padding: 2rem;
+}
+
+.delete-trip-message {
+    margin: 1.5rem 0;
+    color: #4A4A4A;
+    font-size: 1.1rem;
+    font-family: "Inter", sans-serif;
+}
+
+.delete-trip-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.secondary-btn {
+    padding: 0.75rem 2rem;
+    background-color: #f8f9fa;
+    color: #4A4A4A;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.secondary-btn:hover {
+    background-color: #e9ecef;
+    border-color: #A68B7C;
+}
+
+.delete-btn {
+    padding: 0.75rem 2rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+} 

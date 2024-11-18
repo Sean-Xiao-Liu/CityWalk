@@ -28,7 +28,7 @@ class TravelPlanner {
     }
 
     initializeAutocomplete() {
-        // 首先创建基本的自动完成对象
+        // 首先���建基本的自动完成对象
         this.autocomplete = new google.maps.places.Autocomplete(this.searchInput, {
             types: ['establishment', 'geocode'],
             fields: ['name', 'geometry', 'formatted_address', 'place_id']
@@ -588,10 +588,43 @@ class TravelPlanner {
                 const index = e.target.dataset.index;
                 const tripName = savedTrips[index].name;
                 
-                // 添加确认对话框
-                if (confirm(`Are you sure you want to delete "${tripName}"?`)) {
+                // 显示删除确认模态框
+                const deleteModal = document.getElementById('delete-trip-modal');
+                const message = deleteModal.querySelector('.delete-trip-message');
+                message.textContent = `Are you sure you want to delete "${tripName}"?`;
+                
+                deleteModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                // 处理取消按钮
+                const cancelBtn = document.getElementById('cancel-delete-trip');
+                cancelBtn.onclick = () => {
+                    deleteModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                };
+
+                // 处理确认删除按钮
+                const confirmBtn = document.getElementById('confirm-delete-trip');
+                confirmBtn.onclick = () => {
                     this.deleteTrip(index);
-                }
+                    deleteModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                };
+
+                // 处理关闭按钮
+                const closeBtn = deleteModal.querySelector('.close-modal');
+                closeBtn.onclick = () => {
+                    deleteModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                };
+
+                // 点击模态框外部关闭
+                deleteModal.onclick = (e) => {
+                    if (e.target === deleteModal) {
+                        deleteModal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                };
             });
         });
     }
