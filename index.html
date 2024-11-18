@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityWalk - Travel Planning Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">CityWalk</div>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="language-selector">
+                    <select id="language-select">
+                        <option value="en" selected>English</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="main-container">
+            <aside class="visit-order-panel">
+                <h2>Visit Order</h2>
+                <div id="visit-order" class="visit-order-list">
+                    <!-- 访问顺序项会动态生成在这里 -->
+                </div>
+            </aside>
+
+            <section class="itinerary-builder">
+                <div class="search-container">
+                    <input type="text" id="location-search" placeholder="Enter location...">
+                    <button id="add-location">Add Location</button>
+                    <p class="location-hint">Tip: Allow location access for better search results</p>
+                </div>
+
+                <div id="locations-container" class="sortable-container">
+                    <!-- 路线部分会动态生成在这里 -->
+                </div>
+
+                <div class="summary-section">
+                    <h2>Trip Summary</h2>
+                    <div class="total-stats">
+                        <p>Total Time: <span id="total-time">0 minutes</span></p>
+                        <p>Total Distance: <span id="total-distance">0 km</span></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#terms">Terms of Use</a>
+                <a href="#privacy">Privacy Policy</a>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-link">Twitter</a>
+                <a href="#" class="social-link">Facebook</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="translations.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        function loadGoogleMapsAPI() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${config.GOOGLE_MAPS_API_KEY}&libraries=places,geometry&callback=initializeTravelPlanner`;
+            script.async = true;
+            script.defer = true;
+            document.body.appendChild(script);
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadGoogleMapsAPI);
+        } else {
+            loadGoogleMapsAPI();
+        }
+    </script>
+</body>
+</html> 
