@@ -471,7 +471,7 @@ class TravelPlanner {
                 const [movedLocation] = this.locations.splice(oldIndex, 1);
                 this.locations.splice(newIndex, 0, movedLocation);
                 
-                // 更新路��
+                // 更新路
                 this.updateRoutes();
             }
         });
@@ -654,11 +654,15 @@ class TravelPlanner {
     }
 
     saveTrip(name) {
+        // 确保每个地点的笔记都被正确保存
         const trip = {
             name,
             locations: this.locations.map(location => ({
-                ...location,
-                notes: location.notes || [] // 确保包含每个地点的笔记
+                name: location.name,
+                location: location.location,
+                address: location.address,
+                notes: location.notes || [], // 确保包含笔记数组
+                savedTripId: location.savedTripId
             })),
             date: new Date().toISOString()
         };
@@ -824,11 +828,14 @@ class TravelPlanner {
         const visitOrderPanel = document.querySelector('.visit-order-panel h2');
         visitOrderPanel.textContent = this.currentTripName;
         
-        // 深拷贝行程数据，包括笔记
-        this.locations = JSON.parse(JSON.stringify(trip.locations.map(location => ({
-            ...location,
-            notes: location.notes || [] // 确保每个地点都有 notes 数组
-        }))));
+        // 深拷贝行程数据，确保包含所有必要的属性
+        this.locations = trip.locations.map(location => ({
+            name: location.name,
+            location: location.location,
+            address: location.address,
+            notes: location.notes || [], // 确保包含笔记数组
+            savedTripId: location.savedTripId
+        }));
         
         // 清空搜索框
         this.searchInput.value = '';
@@ -923,6 +930,90 @@ class TravelPlanner {
                 console.error('Logout error:', error);
             }
         });
+
+        // 添加注册相关的事件监听
+        const signupBtn = document.getElementById('signupBtn');
+        const signupModal = document.getElementById('signup-modal');
+        const switchToLogin = document.getElementById('switch-to-login');
+        
+        // 打开注册模态框
+        signupBtn.addEventListener('click', () => {
+            signupModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // 关闭注册模态框
+        signupModal.querySelector('.close-modal').addEventListener('click', () => {
+            signupModal.style.display = 'none';
+            document.body.style.overflow = '';
+        });
+        
+        // 切换到登录模态框
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupModal.style.display = 'none';
+            document.getElementById('login-modal').style.display = 'block';
+        });
+        
+        // 处理注册表单提交
+        document.querySelector('.signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirm-password');
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // 更新用户信息
+                await user.updateProfile({
+                    displayName: formData.get('username')
+                });
+                
+                // 关闭模态框
+                signupModal.style.display = 'none';
+                document.body.style.overflow = '';
+                
+                // 可以添加注册成功的提示
+                alert('Registration successful!');
+                
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert(error.message);
+            }
+        });
+        
+        // 处理社交账号注册
+        document.getElementById('google-signup').addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await firebase.auth().signInWithPopup(provider);
+                signupModal.style.display = 'none';
+                document.body.style.overflow = '';
+            } catch (error) {
+                console.error('Google signup error:', error);
+                alert(error.message);
+            }
+        });
+        
+        document.getElementById('apple-signup').addEventListener('click', async () => {
+            const provider = new firebase.auth.OAuthProvider('apple.com');
+            try {
+                await firebase.auth().signInWithPopup(provider);
+                signupModal.style.display = 'none';
+                document.body.style.overflow = '';
+            } catch (error) {
+                console.error('Apple signup error:', error);
+                alert(error.message);
+            }
+        });
     }
 
     // 修改保存笔记的方法
@@ -968,9 +1059,16 @@ class TravelPlanner {
                 saveBtn.textContent = 'Add Note';
                 cancelBtn.style.display = 'none';
                 
-                // 如果是已保存的行程，更新localStorage
-                if (this.locations[this.currentEditingLocationIndex].savedTripId) {
-                    this.updateSavedTrip(this.locations[this.currentEditingLocationIndex].savedTripId);
+                // 如果当前是已保存的行程，更新 localStorage
+                if (this.currentTripName) {
+                    let savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+                    const tripIndex = savedTrips.findIndex(trip => trip.name === this.currentTripName);
+                    
+                    if (tripIndex !== -1) {
+                        // 更新保存的行程中的地点数据
+                        savedTrips[tripIndex].locations = this.locations;
+                        localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+                    }
                 }
             }
         }

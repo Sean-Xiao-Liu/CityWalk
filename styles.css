@@ -1390,3 +1390,27 @@ footer a:hover {
     margin-top: 1rem;
     width: 100%;
 } 
+
+/* 添加注册表单样式 */
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.switch-auth {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.switch-auth a {
+    color: #A68B7C;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.switch-auth a:hover {
+    text-decoration: underline;
+} 
