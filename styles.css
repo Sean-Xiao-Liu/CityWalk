@@ -798,7 +798,7 @@ footer a:hover {
 } 
 
 /* 登录按钮和用户信息样式 */
-.auth-section {
+/* .auth-section {
     display: flex;
     align-items: center;
     margin-left: 2rem;
@@ -858,7 +858,7 @@ footer a:hover {
 .logout-btn:hover {
     background-color: #e9ecef;
     border-color: #A68B7C;
-}
+} */
 
 /* 登录模态框样式 */
 .login-modal {

@@ -1149,7 +1149,7 @@ class TravelPlanner {
 
 function initializeTravelPlanner() {
     if (typeof google === 'undefined') {
-        console.error('Google Maps API 能正确加载');
+        console.error('Google Maps API 能正��加载');
         return;
     }
     window.travelPlanner = new TravelPlanner();
