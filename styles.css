@@ -1224,3 +1224,41 @@ footer a:hover {
     color: #666;
     line-height: 1.4;
 } 
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.auth-buttons button {
+    padding: 0.5rem 2rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+}
+
+#loginBtn {
+    background-color: transparent;
+    border: 1px solid #A68B7C;
+    color: #A68B7C;
+}
+
+#loginBtn:hover {
+    background-color: #A68B7C;
+    color: white;
+}
+
+#signupBtn {
+    background-color: #A68B7C;
+    color: white;
+}
+
+#signupBtn:hover {
+    background-color: #8E7567;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+} 
