@@ -1262,3 +1262,47 @@ footer a:hover {
     background-color: #8E7567;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 } 
+
+/* 修改编辑器容器样式 */
+.editor-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 80px); /* 减去标题和padding的高度 */
+    overflow: hidden; /* 防止整体出��滚动条 */
+}
+
+/* 修改笔记列表样式 */
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+    overflow-y: auto; /* 添加垂直滚动条 */
+    max-height: calc(100% - 250px); /* 减去编辑器区域的高度 */
+    padding-right: 1rem; /* 为滚动条预留空间 */
+}
+
+/* 全局滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #A68B7C;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8E7567;
+}
+
+/* Firefox 滚动条样式 */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #A68B7C #f1f1f1;
+} 
