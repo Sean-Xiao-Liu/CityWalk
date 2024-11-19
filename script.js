@@ -990,7 +990,7 @@ class TravelPlanner {
             }
         });
         
-        // 处理社交账号注册
+        // 处理��交账号注册
         document.getElementById('google-signup').addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
@@ -1292,4 +1292,28 @@ document.getElementById('google-login').addEventListener('click', function() {
 document.getElementById('apple-login').addEventListener('click', function() {
     // 添加 Apple 登录逻辑
     console.log('Apple 登录');
+});
+
+// 添加注册按钮点击事件
+document.getElementById('signupBtn').addEventListener('click', function() {
+    document.getElementById('signup-modal').style.display = 'block';
+});
+
+// 关闭注册模态框
+document.querySelector('#signup-modal .close-modal').addEventListener('click', function() {
+    document.getElementById('signup-modal').style.display = 'none';
+});
+
+// 点击模态框外部关闭
+window.addEventListener('click', function(event) {
+    if (event.target == document.getElementById('signup-modal')) {
+        document.getElementById('signup-modal').style.display = 'none';
+    }
+});
+
+// 切换到登录模态框
+document.getElementById('switch-to-login').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('signup-modal').style.display = 'none';
+    document.getElementById('login-modal').style.display = 'block';
 }); 
