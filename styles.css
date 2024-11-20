@@ -1058,7 +1058,7 @@ footer a:hover {
     align-self: center; /* 移除之前的 flex-end 对齐 */
 }
 
-/* 笔记列表样式 */
+/* 笔记列样式 */
 .notes-list {
     display: flex;
     flex-direction: column;
@@ -1395,8 +1395,9 @@ footer a:hover {
 .signup-form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 2rem;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding: 0 1rem;
 }
 
 .switch-auth {
@@ -1419,14 +1420,21 @@ footer a:hover {
 .input-group {
     position: relative;
     width: 100%;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.input-hint {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.3rem;
+    text-align: left;
 }
 
 .validation-message {
     position: absolute;
     left: 0;
-    bottom: -1.8rem;
-    font-size: 0.8rem;
+    bottom: -1.5rem;
+    font-size: 0.75rem;
     color: #e74c3c;
     line-height: 1.2;
     width: 100%;
@@ -1440,4 +1448,20 @@ footer a:hover {
 .login-input.valid {
     border-color: #2ecc71 !important;
     background-color: rgba(46, 204, 113, 0.05);
+} 
+
+/* 添加输入提示样式 */
+.input-hint {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+    text-align: left;
+}
+
+/* 调整输入组的间距 */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin-bottom: 2.5rem;
+    text-align: left;
 } 
