@@ -1,3 +1,106 @@
+function initializeSignupValidation() {
+    const form = document.querySelector('.signup-form');
+    const usernameInput = document.getElementById('signup-username');
+    const emailInput = document.getElementById('signup-email');
+    const passwordInput = document.getElementById('signup-password');
+    const confirmPasswordInput = document.getElementById('signup-confirm-password');
+    const submitButton = document.getElementById('signup-submit');
+
+    // 验证规则
+    const validators = {
+        username: {
+            pattern: /^[a-zA-Z0-9]{1,20}$/,
+            message: 'Username must be 1-20 characters long and contain only letters and numbers'
+        },
+        email: {
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Please enter a valid email address'
+        },
+        password: {
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/,
+            message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one special character'
+        }
+    };
+
+    // 验证函数
+    function validateInput(input, validationType, showError = false) {
+        const validationMessage = input.parentElement.querySelector('.validation-message');
+        let isValid = false;
+
+        if (!input.value) {
+            validationMessage.textContent = showError ? 'This field is required' : '';
+            isValid = false;
+        } else if (validationType === 'confirm-password') {
+            isValid = input.value === passwordInput.value;
+            validationMessage.textContent = showError && !isValid ? 'Passwords do not match' : '';
+        } else {
+            isValid = validators[validationType].pattern.test(input.value);
+            validationMessage.textContent = showError && !isValid ? validators[validationType].message : '';
+        }
+
+        // 只在有值时显示验证状态
+        if (input.value) {
+            input.classList.toggle('valid', isValid);
+            input.classList.toggle('invalid', !isValid);
+        } else {
+            input.classList.remove('valid', 'invalid');
+        }
+
+        return isValid;
+    }
+
+    // 检查表单有效性
+    function checkFormValidity(showErrors = false) {
+        const isUsernameValid = validateInput(usernameInput, 'username', showErrors);
+        const isEmailValid = validateInput(emailInput, 'email', showErrors);
+        const isPasswordValid = validateInput(passwordInput, 'password', showErrors);
+        const isConfirmPasswordValid = validateInput(confirmPasswordInput, 'confirm-password', showErrors);
+
+        submitButton.disabled = !(isUsernameValid && isEmailValid && 
+                                isPasswordValid && isConfirmPasswordValid);
+    }
+
+    // 添加输入事件监听器
+    const inputs = [
+        { element: usernameInput, type: 'username' },
+        { element: emailInput, type: 'email' },
+        { element: passwordInput, type: 'password' },
+        { element: confirmPasswordInput, type: 'confirm-password' }
+    ];
+
+    inputs.forEach(({ element, type }) => {
+        // 输入时验证但不显示错误消息
+        element.addEventListener('input', () => {
+            validateInput(element, type, false);
+            checkFormValidity(false);
+        });
+
+        // 失去焦点时验证并显示错误消息
+        element.addEventListener('blur', () => {
+            validateInput(element, type, true);
+            checkFormValidity(false);
+        });
+
+        // 获得焦点时清除错误消息
+        element.addEventListener('focus', () => {
+            element.parentElement.querySelector('.validation-message').textContent = '';
+        });
+    });
+
+    // 表单提交验证
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        checkFormValidity(true);
+        
+        if (!submitButton.disabled) {
+            console.log('Form submitted successfully');
+        }
+    });
+}
+
+// 在页面加载完成后初始化验证
+document.addEventListener('DOMContentLoaded', initializeSignupValidation);
+
 class TravelPlanner {
     constructor() {
         // 初始化属性
@@ -471,7 +574,7 @@ class TravelPlanner {
                 const [movedLocation] = this.locations.splice(oldIndex, 1);
                 this.locations.splice(newIndex, 0, movedLocation);
                 
-                // 更新路线
+                // 更新路
                 this.updateRoutes();
             }
         });
@@ -654,11 +757,15 @@ class TravelPlanner {
     }
 
     saveTrip(name) {
+        // 确保每个地点的笔记都被正确保存
         const trip = {
             name,
             locations: this.locations.map(location => ({
-                ...location,
-                notes: location.notes || [] // 确保包含每个地点的笔记
+                name: location.name,
+                location: location.location,
+                address: location.address,
+                notes: location.notes || [], // 确保包含笔记数组
+                savedTripId: location.savedTripId
             })),
             date: new Date().toISOString()
         };
@@ -824,11 +931,14 @@ class TravelPlanner {
         const visitOrderPanel = document.querySelector('.visit-order-panel h2');
         visitOrderPanel.textContent = this.currentTripName;
         
-        // 深拷贝行程数据，包括笔记
-        this.locations = JSON.parse(JSON.stringify(trip.locations.map(location => ({
-            ...location,
-            notes: location.notes || [] // 确保每个地点都有 notes 数组
-        }))));
+        // 深拷贝行程数据，确保包含所有必要的属性
+        this.locations = trip.locations.map(location => ({
+            name: location.name,
+            location: location.location,
+            address: location.address,
+            notes: location.notes || [], // 确保包含笔记数组
+            savedTripId: location.savedTripId
+        }));
         
         // 清空搜索框
         this.searchInput.value = '';
@@ -923,6 +1033,90 @@ class TravelPlanner {
                 console.error('Logout error:', error);
             }
         });
+
+        // 添加注册相关的事件监听
+        const signupBtn = document.getElementById('signupBtn');
+        const signupModal = document.getElementById('signup-modal');
+        const switchToLogin = document.getElementById('switch-to-login');
+        
+        // 打开注册模态框
+        signupBtn.addEventListener('click', () => {
+            signupModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // 关闭注册模态框
+        signupModal.querySelector('.close-modal').addEventListener('click', () => {
+            signupModal.style.display = 'none';
+            document.body.style.overflow = '';
+        });
+        
+        // 切换到登录模态框
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupModal.style.display = 'none';
+            document.getElementById('login-modal').style.display = 'block';
+        });
+        
+        // 处理注册表单提交
+        document.querySelector('.signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirm-password');
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // 更新用户信息
+                await user.updateProfile({
+                    displayName: formData.get('username')
+                });
+                
+                // 关闭模态框
+                signupModal.style.display = 'none';
+                document.body.style.overflow = '';
+                
+                // 可以添加注册成功的提示
+                alert('Registration successful!');
+                
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert(error.message);
+            }
+        });
+        
+        // 处理交账号注册
+        document.getElementById('google-signup').addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await firebase.auth().signInWithPopup(provider);
+                signupModal.style.display = 'none';
+                document.body.style.overflow = '';
+            } catch (error) {
+                console.error('Google signup error:', error);
+                alert(error.message);
+            }
+        });
+        
+        document.getElementById('apple-signup').addEventListener('click', async () => {
+            const provider = new firebase.auth.OAuthProvider('apple.com');
+            try {
+                await firebase.auth().signInWithPopup(provider);
+                signupModal.style.display = 'none';
+                document.body.style.overflow = '';
+            } catch (error) {
+                console.error('Apple signup error:', error);
+                alert(error.message);
+            }
+        });
     }
 
     // 修改保存笔记的方法
@@ -968,9 +1162,16 @@ class TravelPlanner {
                 saveBtn.textContent = 'Add Note';
                 cancelBtn.style.display = 'none';
                 
-                // 如果是已保存的行程，更新localStorage
-                if (this.locations[this.currentEditingLocationIndex].savedTripId) {
-                    this.updateSavedTrip(this.locations[this.currentEditingLocationIndex].savedTripId);
+                // 如果当前是已保存的行程，更新 localStorage
+                if (this.currentTripName) {
+                    let savedTrips = JSON.parse(localStorage.getItem('savedTrips') || '[]');
+                    const tripIndex = savedTrips.findIndex(trip => trip.name === this.currentTripName);
+                    
+                    if (tripIndex !== -1) {
+                        // 更新保存的行程中的地点数据
+                        savedTrips[tripIndex].locations = this.locations;
+                        localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
+                    }
                 }
             }
         }
@@ -1149,7 +1350,7 @@ class TravelPlanner {
 
 function initializeTravelPlanner() {
     if (typeof google === 'undefined') {
-        console.error('Google Maps API 能正��加载');
+        console.error('Google Maps API 能正加载');
         return;
     }
     window.travelPlanner = new TravelPlanner();
@@ -1159,4 +1360,64 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeTravelPlanner);
 } else {
     initializeTravelPlanner();
-} 
+}
+
+// 添加登录按钮点击事件
+document.getElementById('loginBtn').addEventListener('click', function() {
+    document.getElementById('login-modal').style.display = 'block';
+});
+
+// 关闭模态框
+document.querySelector('#login-modal .close-modal').addEventListener('click', function() {
+    document.getElementById('login-modal').style.display = 'none';
+});
+
+// 点击模态框外部关闭
+window.addEventListener('click', function(event) {
+    if (event.target == document.getElementById('login-modal')) {
+        document.getElementById('login-modal').style.display = 'none';
+    }
+});
+
+// 处理登录表单提交
+document.querySelector('.login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // 这里添加登录逻辑
+    console.log('登录表单提交');
+});
+
+// 处理社交登录按钮点击
+document.getElementById('google-login').addEventListener('click', function() {
+    // 添加 Google 登录逻辑
+    console.log('Google 登录');
+});
+
+document.getElementById('apple-login').addEventListener('click', function() {
+    // 添加 Apple 登录逻辑
+    console.log('Apple 登录');
+});
+
+// 添加注册按钮点击事件
+document.getElementById('signupBtn').addEventListener('click', function() {
+    document.getElementById('signup-modal').style.display = 'block';
+});
+
+// 关闭注册模态框
+document.querySelector('#signup-modal .close-modal').addEventListener('click', function() {
+    document.getElementById('signup-modal').style.display = 'none';
+});
+
+// 点击模态框外部关闭
+window.addEventListener('click', function(event) {
+    if (event.target == document.getElementById('signup-modal')) {
+        document.getElementById('signup-modal').style.display = 'none';
+    }
+});
+
+// 切换到登录模���框
+document.getElementById('switch-to-login').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('signup-modal').style.display = 'none';
+    document.getElementById('login-modal').style.display = 'block';
+});
+

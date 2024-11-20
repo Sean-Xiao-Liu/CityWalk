@@ -862,50 +862,77 @@ footer a:hover {
 
 /* 登录模态框样式 */
 .login-modal {
-    width: 400px;
+    width: 500px;
     height: auto;
-    padding: 2rem;
+    padding: 2.5rem;
+    text-align: center;
 }
 
-.login-options {
+.login-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     margin-top: 2rem;
 }
 
-.social-login-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 0.75rem;
+.login-input {
+    padding: 0.8rem 1rem;
     border: 1px solid #E5E5E5;
     border-radius: 12px;
-    background-color: white;
+    font-size: 1rem;
+    font-family: "Inter", sans-serif;
+    width: 100%;
+    margin-bottom: 0.2rem;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #A68B7C;
+    box-shadow: 0 0 0 2px rgba(166, 139, 124, 0.1);
+}
+
+.login-btn {
+    padding: 1rem;
+    background-color: #A68B7C;
+    color: white;
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     font-family: "Inter", sans-serif;
+    font-weight: 500;
     font-size: 1rem;
-    transition: all 0.3s;
+    transition: background-color 0.3s;
 }
 
-.social-login-btn:hover {
-    background-color: #f8f9fa;
-    border-color: #A68B7C;
+.login-btn:hover {
+    background-color: #8E7567;
 }
 
-.social-login-btn .social-icon {
-    width: 24px;
-    height: 24px;
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    color: #666;
 }
 
-#google-login .social-icon {
-    fill: #4285F4;
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: #E5E5E5;
 }
 
-#apple-login .social-icon {
-    fill: #000000;
-} 
+.forgot-password {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+.forgot-password:hover {
+    color: #A68B7C;
+}
 
 /* 修改删除确认模态框样式 */
 .delete-modal {
@@ -1032,7 +1059,7 @@ footer a:hover {
     align-self: center; /* 移除之前的 flex-end 对齐 */
 }
 
-/* 笔记列表样式 */
+/* 笔记列样式 */
 .notes-list {
     display: flex;
     flex-direction: column;
@@ -1271,7 +1298,7 @@ footer a:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 } 
 
-/* 修改编辑器容器样式 */
+/* 修改编器容器样式 */
 .editor-container {
     display: flex;
     flex-direction: column;
@@ -1309,8 +1336,145 @@ footer a:hover {
     background: #8E7567;
 }
 
-/* Firefox 滚动条样式 */
+/* Firefox 滚动条式 */
 * {
     scrollbar-width: thin;
     scrollbar-color: #A68B7C #f1f1f1;
+} 
+
+/* 修改社交登录按钮样式 */
+.social-login-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    border: 1px solid #E5E5E5;
+    background-color: white;
+    color: #4A4A4A;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.social-login-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #A68B7C;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.social-login-btn .social-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+#google-login .social-icon,
+#apple-login .social-icon {
+    fill: #4A4A4A;
+    opacity: 0.8;
+}
+
+.social-login-btn:hover .social-icon {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+/* 调整登录选项容器的样式 */
+.login-options {
+    margin-top: 1rem;
+    width: 100%;
+} 
+
+/* 添加注册表单样式 */
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding: 0 1rem;
+}
+
+.switch-auth {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.switch-auth a {
+    color: #A68B7C;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.switch-auth a:hover {
+    text-decoration: underline;
+} 
+
+/* 修改验证相关样式 */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1.2rem;
+    text-align: left;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.3rem;
+    margin-bottom: 0.2rem;
+    text-align: left;
+}
+
+.validation-message {
+    position: absolute;
+    left: 0;
+    bottom: -1rem;
+    font-size: 0.75rem;
+    color: #e74c3c;
+    line-height: 1.2;
+    width: 100%;
+}
+
+.login-input.invalid {
+    border-color: #e74c3c !important;
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+.login-input.valid {
+    border-color: #2ecc71 !important;
+    background-color: rgba(46, 204, 113, 0.05);
+} 
+
+/* 添加输入提示样式 */
+.input-hint {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.3rem;
+    margin-bottom: 0.2rem;
+    margin-left: 0.5rem;
+    text-align: left;
+}
+
+/* 调整输入组的间距 */
+.input-group {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.2rem;
+    text-align: left;
+} 
+
+.error-message {
+    color: #ff4444;
+    font-size: 14px;
+    margin: 10px 0;
+    /* 默认隐藏状态 */
+    display: none;
 } 
