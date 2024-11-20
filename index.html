@@ -199,12 +199,32 @@
         <div class="modal-content login-modal">
             <span class="close-modal">&times;</span>
             <h3>Sign Up</h3>
-            <form class="signup-form">
-                <input type="text" class="login-input" placeholder="Username" required>
-                <input type="email" class="login-input" placeholder="Email" required>
-                <input type="password" class="login-input" placeholder="Password" required>
-                <input type="password" class="login-input" placeholder="Confirm Password" required>
-                <button type="submit" class="login-btn">Sign Up</button>
+            <form class="signup-form" novalidate>
+                <div class="input-group">
+                    <input type="text" class="login-input" name="username" id="signup-username" 
+                        placeholder="Username" required>
+                    <span class="validation-message" id="username-validation"></span>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" class="login-input" name="email" id="signup-email" 
+                        placeholder="Email" required>
+                    <span class="validation-message" id="email-validation"></span>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" class="login-input" name="password" id="signup-password" 
+                        placeholder="Password" required>
+                    <span class="validation-message" id="password-validation"></span>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" class="login-input" name="confirm-password" id="signup-confirm-password" 
+                        placeholder="Confirm Password" required>
+                    <span class="validation-message" id="confirm-password-validation"></span>
+                </div>
+                
+                <button type="submit" class="login-btn" id="signup-submit" disabled>Sign Up</button>
             </form>
             <div class="social-login-divider">
                 <div class="divider-line"></div>
