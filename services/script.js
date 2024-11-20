@@ -1421,9 +1421,3 @@ document.getElementById('switch-to-login').addEventListener('click', function(e)
     document.getElementById('login-modal').style.display = 'block';
 });
 
-
-// 在页面加载完成后初始化验证
-document.addEventListener('DOMContentLoaded', initializeSignupValidation);
-
-// 在页面加载完成后初始化验证
-document.addEventListener('DOMContentLoaded', initializeSignupValidation); 
