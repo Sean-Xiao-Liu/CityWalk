@@ -1414,7 +1414,7 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// 切换到登录模态框
+// 切换到登录模���框
 document.getElementById('switch-to-login').addEventListener('click', function(e) {
     e.preventDefault();
     document.getElementById('signup-modal').style.display = 'none';
