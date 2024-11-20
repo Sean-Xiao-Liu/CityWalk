@@ -259,9 +259,11 @@
     <script src="config/translations.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script type="module" src="services/script.js"></script>
+
     <script>
         function loadGoogleMapsAPI() {
             const script = document.createElement('script');
+            // 修改这一行
             script.src = `https://maps.googleapis.com/maps/api/js?key=${config.GOOGLE_MAPS_API_KEY}&libraries=places,geometry&callback=initializeTravelPlanner`;
             script.async = true;
             script.defer = true;
