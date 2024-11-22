@@ -29,7 +29,19 @@ const translations = {
         enterTripName: "Enter trip name...",
         save: "Save",
         noSavedTrips: "No saved trips",
-        deleteLocationConfirm: "This location contains %s note(s). Are you sure you want to delete it?"
+        deleteLocationConfirm: "This location contains %s note(s). Are you sure you want to delete it?",
+        login: "Login",
+        signup: "Sign Up",
+        loginWith: "Login with",
+        signupWith: "Sign Up with",
+        email: "Email",
+        password: "Password",
+        confirmPassword: "Confirm Password",
+        username: "Username",
+        switchToLogin: "Already have an account? Login",
+        switchToSignup: "Don't have an account? Sign Up",
+        cancel: "Cancel",
+        confirm: "Confirm"
     },
     zh: {
         title: "城市漫步 - 旅行规划工具",
@@ -61,6 +73,18 @@ const translations = {
         enterTripName: "输入行程名称...",
         save: "保存",
         noSavedTrips: "暂无保存的行程",
-        deleteLocationConfirm: "该地点包含 %s 条笔记。确定要删除吗？"
+        deleteLocationConfirm: "该地点包含 %s 条笔记。确定要删除吗？",
+        login: "登录",
+        signup: "注册",
+        loginWith: "使用以下方式登录",
+        signupWith: "使用以下方式注册",
+        email: "邮箱",
+        password: "密码",
+        confirmPassword: "确认密码",
+        username: "用户名",
+        switchToLogin: "已有账号？点击登录",
+        switchToSignup: "没有账号？点击注册",
+        cancel: "取消",
+        confirm: "确认"
     }
 }; 
