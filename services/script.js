@@ -1,5 +1,6 @@
 import { initializeSignupValidation } from "../utils/validators.js";
 import { initializeAutocomplete } from './mapService.js';
+import { UIService } from './uiService.js';
 // 在页面加载完成后初始化验证
 document.addEventListener("DOMContentLoaded", initializeSignupValidation);
 
@@ -19,20 +20,25 @@ class TravelPlanner {
     this.totalTime = document.getElementById("total-time");
     this.totalDistance = document.getElementById("total-distance");
 
+    // 初始化 UI 服务
+    this.uiService = new UIService(this);
+    
     // 修改初始化方式
-    // 将 this 作为上下文传递给 initializeAutocomplete
     initializeAutocomplete.call(this);
     
-    // 其他初始化保持不变
+    // 其他初始化
     this.initializeSortable();
     this.setupEventListeners();
-    this.currentLanguage = "en";
-    this.initializeLanguageSelector();
     this.initializeVisitOrderSortable();
-    this.initializeWeChatModal();
     this.initializeSaveTrip();
     this.loadSavedTrips();
     this.initializeAuth();
+    this.currentTripName = null;
+  }
+
+  // 获取当前语言
+  getCurrentLanguage() {
+    return this.uiService.getCurrentLanguage();
   }
 
   initializeSortable() {
@@ -115,7 +121,7 @@ class TravelPlanner {
       visitOrderPanel.textContent = this.currentTripName;
     } else {
       visitOrderPanel.textContent =
-        translations[this.currentLanguage].visitOrder;
+        translations[this.getCurrentLanguage()].visitOrder;
     }
 
     // 清空现有路线
@@ -125,14 +131,14 @@ class TravelPlanner {
     if (this.locations.length < 2) {
       // 清空总结信息
       this.totalTime.textContent = translations[
-        this.currentLanguage
+        this.getCurrentLanguage()
       ].minutes.replace("%s", "0");
       this.totalDistance.textContent = translations[
-        this.currentLanguage
+        this.getCurrentLanguage()
       ].kilometers.replace("%s", "0");
 
-      // 更新访问顺序面板 - 修改这部分
-      this.updateVisitOrder(); // 使用统一的方法更新访问顺序
+      // 更新访问顺序面板
+      this.updateVisitOrder();
 
       // 如果只有一个地点，显示单个地点
       if (this.locations.length === 1) {
@@ -146,14 +152,6 @@ class TravelPlanner {
 
     let totalTime = 0;
     let totalDistance = 0;
-    this.visitOrder.innerHTML = "";
-
-    // 更新访问顺序列表
-    this.locations.forEach((location, index) => {
-      const li = document.createElement("li");
-      li.textContent = location.name;
-      this.visitOrder.appendChild(li);
-    });
 
     // 创建路线段
     for (let i = 0; i < this.locations.length - 1; i++) {
@@ -177,17 +175,16 @@ class TravelPlanner {
         totalDistance += distance;
 
         // 更新路线段信息
-        const t = translations[this.currentLanguage];
+        const t = translations[this.getCurrentLanguage()];
         routeSection.querySelector(".travel-time").textContent =
           Math.round(duration / 60) + " " + t.minutes;
         routeSection.querySelector(".distance").textContent = `${(
           distance / 1000
         ).toFixed(1)} km (${(distance / 1609.34).toFixed(1)} mi)`;
 
-        // 修改地图初始化方式
+        // 初始化地图
         const mapElement = routeSection.querySelector(".route-map");
         if (mapElement) {
-          // 确保地图容器有尺寸
           mapElement.style.width = "100%";
           mapElement.style.height = "300px";
 
@@ -198,11 +195,6 @@ class TravelPlanner {
             streetViewControl: false,
             fullscreenControl: false,
             gestureHandling: "cooperative",
-          });
-
-          // 等待地图加载完成
-          await new Promise((resolve) => {
-            google.maps.event.addListenerOnce(map, "idle", resolve);
           });
 
           const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -219,24 +211,19 @@ class TravelPlanner {
         }
       } catch (error) {
         console.error("Route calculation error:", error);
-        console.error("Start location:", start.location);
-        console.error("End location:", end.location);
-        const t = translations[this.currentLanguage];
+        const t = translations[this.getCurrentLanguage()];
         routeSection.querySelector(".travel-time").textContent = t.calculating;
         routeSection.querySelector(".distance").textContent = t.calculating;
       }
     }
 
     // 更新总计
-    const t = translations[this.currentLanguage];
-
-    // 转换总时间为小时和分钟
+    const t = translations[this.getCurrentLanguage()];
     const hours = Math.floor(totalTime / 3600);
     const minutes = Math.round((totalTime % 3600) / 60);
 
-    // 根据语言设置不同的显示格式
     let timeDisplay;
-    if (this.currentLanguage === "zh") {
+    if (this.getCurrentLanguage() === "zh") {
       timeDisplay =
         hours > 0 ? `${hours} 小时 ${minutes} 分钟` : `${minutes} 分钟`;
     } else {
@@ -248,12 +235,12 @@ class TravelPlanner {
       1
     )} km (${(totalDistance / 1609.34).toFixed(1)} mi)`;
 
-    // 在更新路线后更新访问顺序面板
+    // 更新访问顺序面板
     this.updateVisitOrder();
   }
 
   createRouteSection(start, end) {
-    const t = translations[this.currentLanguage];
+    const t = translations[this.getCurrentLanguage()];
     const template = `
             <div class="route-section" draggable="true">
                 <div class="route-number">${t.route} ${
@@ -314,7 +301,7 @@ class TravelPlanner {
 
   // 修改单个地点显示方法
   createSingleLocationSection(location) {
-    const t = translations[this.currentLanguage];
+    const t = translations[this.getCurrentLanguage()];
     const template = `
             <div class="route-section" draggable="true">
                 <div class="route-number">Route 1</div>
@@ -367,60 +354,6 @@ class TravelPlanner {
     return element;
   }
 
-  initializeLanguageSelector() {
-    const languageSelect = document.getElementById("language-select");
-    const languageSelector = document.querySelector(".language-selector");
-
-    // 设置初始图标
-    languageSelector.setAttribute("data-selected", languageSelect.value);
-
-    languageSelect.addEventListener("change", (e) => {
-      this.currentLanguage = e.target.value;
-      // 更新国旗图标
-      languageSelector.setAttribute("data-selected", e.target.value);
-      this.updateLanguage();
-    });
-  }
-
-  updateLanguage() {
-    const t = translations[this.currentLanguage];
-
-    // 更新页面标题
-    document.title = t.title;
-
-    // 更新导航栏
-    document.querySelector(".logo").textContent = t.title.split("-")[0].trim();
-    const navLinks = document.querySelectorAll("nav ul li a");
-    navLinks[0].textContent = t.home;
-    navLinks[1].textContent = t.about;
-    navLinks[2].textContent = t.contact;
-
-    // 更新搜索区域
-    this.searchInput.placeholder = t.searchPlaceholder;
-    this.addButton.textContent = t.addLocation;
-    document.querySelector(".location-hint").textContent = t.locationHint;
-
-    // 更顺
-    document.querySelector(".visit-order-panel h2").textContent = t.visitOrder;
-
-    // 更新总结区域
-    document.querySelector(".summary-section h2").textContent = t.tripSummary;
-    const totalStats = document.querySelector(".total-stats").children;
-    totalStats[0].firstChild.textContent = `${t.totalTime}: `;
-    totalStats[1].firstChild.textContent = `${t.totalDistance}: `;
-
-    // 更新页脚链接
-    const footerLinks = document.querySelectorAll(".footer-links a");
-    footerLinks[0].textContent = t.termsOfUse;
-    footerLinks[1].textContent = t.privacyPolicy;
-
-    // 更新模态框标题
-    document.querySelector("#wechat-modal h3").textContent = t.wechatQRCode;
-
-    // 更新所有路线段
-    this.updateRoutes();
-  }
-
   initializeVisitOrderSortable() {
     new Sortable(document.getElementById("visit-order"), {
       animation: 150,
@@ -468,82 +401,87 @@ class TravelPlanner {
                 </div>
             `;
 
-      // 添加点击事件，滚动到对应的路线部分
-      orderItem.addEventListener("click", (e) => {
-        // 如果点击的是按钮，不执行滚动
-        if (!e.target.closest("button")) {
-          const routeSections = document.querySelectorAll(".route-section");
-          if (routeSections[index]) {
-            routeSections[index].scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          }
-        }
-      });
-
-      // 添加鼠标指针样式
-      orderItem.style.cursor = "pointer";
-
-      // 添加删除按钮事件监听
-      const deleteBtn = orderItem.querySelector(".delete-location");
-      deleteBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const index = parseInt(
-          e.target.closest(".delete-location").dataset.index
-        );
-        const location = this.locations[index];
-        const notesCount = location.notes ? location.notes.length : 0;
-
-        // 如果地点有笔记，显示确认对话框
-        if (notesCount > 0) {
-          const deleteModal = document.getElementById("delete-location-modal");
-          const message = deleteModal.querySelector(".delete-message");
-          const confirmBtn = document.getElementById("confirm-delete-location");
-          const cancelBtn = document.getElementById("cancel-delete-location");
-
-          message.textContent = `This location contains ${notesCount} note${
-            notesCount > 1 ? "s" : ""
-          }. Are you sure you want to delete it?`;
-
-          deleteModal.style.display = "block";
-          document.body.style.overflow = "hidden";
-
-          const closeModal = () => {
-            deleteModal.style.display = "none";
-            document.body.style.overflow = "";
-          };
-
-          cancelBtn.onclick = closeModal;
-          deleteModal.querySelector(".close-modal").onclick = closeModal;
-
-          confirmBtn.onclick = () => {
-            this.removeLocation(index);
-            closeModal();
-          };
-
-          deleteModal.onclick = (e) => {
-            if (e.target === deleteModal) {
-              closeModal();
-            }
-          };
-        } else {
-          // 如果没有笔记，直接删除
-          this.removeLocation(index);
-        }
-      });
-
-      // 添加编辑按钮事件监听
-      const editBtn = orderItem.querySelector(".edit-location");
-      editBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const index = parseInt(
-          e.target.closest(".edit-location").dataset.index
-        );
-        this.openNoteEditor(index);
-      });
-
+      // 添加点击事件处理
+      this.setupVisitOrderItemEvents(orderItem, index);
       visitOrderList.appendChild(orderItem);
+    });
+  }
+
+  setupVisitOrderItemEvents(orderItem, index) {
+    // 添加点击事件，滚动到对应的路线部分
+    orderItem.addEventListener("click", (e) => {
+      if (!e.target.closest("button")) {
+        const routeSections = document.querySelectorAll(".route-section");
+        if (routeSections[index]) {
+          routeSections[index].scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }
+      }
+    });
+
+    // 设置编辑和删除按钮事件
+    const editBtn = orderItem.querySelector(".edit-location");
+    const deleteBtn = orderItem.querySelector(".delete-location");
+
+    editBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.openNoteEditor(index);
+    });
+
+    deleteBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const location = this.locations[index];
+      const notesCount = location.notes ? location.notes.length : 0;
+
+      // 如果地点有笔记，显示确认对话框
+      if (notesCount > 0) {
+        const deleteModal = document.getElementById("delete-location-modal");
+        const message = deleteModal.querySelector(".delete-message");
+        const confirmBtn = document.getElementById("confirm-delete-location");
+        const cancelBtn = document.getElementById("cancel-delete-location");
+
+        const t = translations[this.getCurrentLanguage()];
+        message.textContent = t.deleteLocationConfirm.replace('%s', notesCount);
+
+        deleteModal.style.display = "block";
+        document.body.style.overflow = "hidden";
+
+        const closeModal = () => {
+          deleteModal.style.display = "none";
+          document.body.style.overflow = "";
+        };
+
+        // 清除之前的事件监听器
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newCancelBtn.onclick = closeModal;
+        newConfirmBtn.onclick = () => {
+          this.removeLocation(index);
+          closeModal();
+        };
+
+        // 点击模态框外部关闭
+        deleteModal.onclick = (e) => {
+          if (e.target === deleteModal) {
+            closeModal();
+          }
+        };
+
+        // ESC 键关闭
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && deleteModal.style.display === "block") {
+            closeModal();
+          }
+        });
+      } else {
+        // 如果没有笔记，直接删除
+        this.removeLocation(index);
+      }
     });
   }
 
@@ -562,38 +500,6 @@ class TravelPlanner {
         localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
       }
     }
-  }
-
-  initializeWeChatModal() {
-    const modal = document.getElementById("wechat-modal");
-    const wechatLink = document.getElementById("wechat-link");
-    const closeBtn = document.querySelector(".close-modal");
-
-    wechatLink.addEventListener("click", (e) => {
-      e.preventDefault();
-      modal.style.display = "block";
-      document.body.style.overflow = "hidden"; // 防止背景滚动
-    });
-
-    closeBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-      document.body.style.overflow = ""; // 恢复滚动
-    });
-
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "";
-      }
-    });
-
-    // 添加 ESC 键关闭功能
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal.style.display === "block") {
-        modal.style.display = "none";
-        document.body.style.overflow = "";
-      }
-    });
   }
 
   initializeSaveTrip() {
@@ -653,7 +559,7 @@ class TravelPlanner {
   updateSavedTripsList() {
     const savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
     const tripsList = document.getElementById("saved-trips-list");
-    const t = translations[this.currentLanguage];
+    const t = translations[this.getCurrentLanguage()];
 
     if (savedTrips.length === 0) {
       tripsList.innerHTML = `<a href="#" class="no-trips">${t.noSavedTrips}</a>`;
@@ -802,19 +708,16 @@ class TravelPlanner {
     // 清空当前路线
     this.locations = [];
 
-    // 保存行程名称
+    // 保存行程名称并更新UI
     this.currentTripName = trip.name;
+    this.uiService.setCurrentTripName(trip.name);
 
-    // 更新左侧面板标题
-    const visitOrderPanel = document.querySelector(".visit-order-panel h2");
-    visitOrderPanel.textContent = this.currentTripName;
-
-    // 深拷贝行程数据，确保包含所有必要的属性
+    // 深拷贝行程数据
     this.locations = trip.locations.map((location) => ({
       name: location.name,
       location: location.location,
       address: location.address,
-      notes: location.notes || [], // 确保包含笔记数组
+      notes: location.notes || [],
       savedTripId: location.savedTripId,
     }));
 
@@ -823,6 +726,7 @@ class TravelPlanner {
 
     // 更新路线和显示
     this.updateRoutes();
+    this.updateVisitOrder(); // 确保更新访问顺序卡片
   }
 
   deleteTrip(index) {

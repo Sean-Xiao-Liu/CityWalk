@@ -28,7 +28,8 @@ const translations = {
         saveTripTitle: "Save Your Trip",
         enterTripName: "Enter trip name...",
         save: "Save",
-        noSavedTrips: "No saved trips"
+        noSavedTrips: "No saved trips",
+        deleteLocationConfirm: "This location contains %s note(s). Are you sure you want to delete it?"
     },
     zh: {
         title: "城市漫步 - 旅行规划工具",
@@ -59,6 +60,7 @@ const translations = {
         saveTripTitle: "保存您的行程",
         enterTripName: "输入行程名称...",
         save: "保存",
-        noSavedTrips: "暂无保存的行程"
+        noSavedTrips: "暂无保存的行程",
+        deleteLocationConfirm: "该地点包含 %s 条笔记。确定要删除吗？"
     }
 }; 
