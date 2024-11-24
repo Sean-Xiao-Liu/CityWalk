@@ -1,6 +1,7 @@
 import { initializeSignupValidation } from "../utils/validators.js";
 import { initializeAutocomplete } from './mapService.js';
 import { UIService } from './uiService.js';
+import { NoteService } from './noteService.js';
 // 在页面加载完成后初始化验证
 document.addEventListener("DOMContentLoaded", initializeSignupValidation);
 
@@ -11,6 +12,24 @@ class TravelPlanner {
     this.maps = new Map();
     this.directionsService = new google.maps.DirectionsService();
     this.autocomplete = null;
+    this.currentTripName = null;
+
+    // 初始化 NoteService
+    this.noteService = new NoteService();
+    
+    // 将 locations 和 currentTripName 的引用传给 NoteService
+    Object.defineProperty(this.noteService, 'locations', {
+      get: () => this.locations,
+      set: (value) => this.locations = value
+    });
+    
+    Object.defineProperty(this.noteService, 'currentTripName', {
+      get: () => this.currentTripName,
+      set: (value) => this.currentTripName = value
+    });
+
+    // 初始化笔记服务的事件监听器
+    this.noteService.initializeEventListeners();
 
     // DOM 元素
     this.searchInput = document.getElementById("location-search");
@@ -33,7 +52,6 @@ class TravelPlanner {
     this.initializeSaveTrip();
     this.loadSavedTrips();
     this.initializeAuth();
-    this.currentTripName = null;
   }
 
   // 获取当前语言
@@ -362,7 +380,7 @@ class TravelPlanner {
         const oldIndex = evt.oldIndex;
         const newIndex = evt.newIndex;
 
-        // 更新locations数组顺序
+        // 新locations数组顺序
         const [movedLocation] = this.locations.splice(oldIndex, 1);
         this.locations.splice(newIndex, 0, movedLocation);
 
@@ -408,7 +426,7 @@ class TravelPlanner {
   }
 
   setupVisitOrderItemEvents(orderItem, index) {
-    // 添加点击事件，滚动到对应的路线部分
+    // 使用箭头函数来保持 this 的上下文
     orderItem.addEventListener("click", (e) => {
       if (!e.target.closest("button")) {
         const routeSections = document.querySelectorAll(".route-section");
@@ -421,15 +439,18 @@ class TravelPlanner {
       }
     });
 
-    // 设置编辑和删除按钮事件
+    // 修改编辑按钮的事件监听器 - 使用箭头函数
     const editBtn = orderItem.querySelector(".edit-location");
-    const deleteBtn = orderItem.querySelector(".delete-location");
-
     editBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      this.openNoteEditor(index);
+      e.preventDefault();
+      console.log("Edit button clicked for location", index);
+      console.log("noteService:", this.noteService); // 调试日志
+      this.noteService.openNoteEditor(index);
     });
 
+    // 设置删除按钮事件
+    const deleteBtn = orderItem.querySelector(".delete-location");
     deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       const location = this.locations[index];
@@ -909,248 +930,13 @@ class TravelPlanner {
       });
   }
 
-  // 修改保存笔记的方法
-  saveLocationNote() {
-    if (this.currentEditingLocationIndex !== null) {
-      const editor = document.getElementById("note-editor");
-      const saveBtn = document.getElementById("save-note");
-      const cancelBtn = document.getElementById("cancel-note");
-      const noteContent = editor.value.trim();
-
-      if (noteContent) {
-        if (this.editingNoteId) {
-          // 更新现有笔记
-          const notes = this.locations[this.currentEditingLocationIndex].notes;
-          const index = notes.findIndex(
-            (n) => n.id.toString() === this.editingNoteId
-          );
-          if (index !== -1) {
-            notes[index] = {
-              ...notes[index],
-              content: noteContent,
-              date: new Date().toISOString(),
-            };
-          }
-          this.editingNoteId = null;
-        } else {
-          // 创建新笔记
-          const newNote = {
-            content: noteContent,
-            date: new Date().toISOString(),
-            id: Date.now(),
-          };
-
-          if (!this.locations[this.currentEditingLocationIndex].notes) {
-            this.locations[this.currentEditingLocationIndex].notes = [];
-          }
-          this.locations[this.currentEditingLocationIndex].notes.push(newNote);
-        }
-
-        // 更新显示
-        this.updateNotesList();
-
-        // 重置编辑器和按钮
-        editor.value = "";
-        saveBtn.textContent = "Add Note";
-        cancelBtn.style.display = "none";
-
-        // 如果当前是已保存的行程，更新 localStorage
-        if (this.currentTripName) {
-          let savedTrips = JSON.parse(
-            localStorage.getItem("savedTrips") || "[]"
-          );
-          const tripIndex = savedTrips.findIndex(
-            (trip) => trip.name === this.currentTripName
-          );
-
-          if (tripIndex !== -1) {
-            // 更新保存的行程中的地点数据
-            savedTrips[tripIndex].locations = this.locations;
-            localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
-          }
-        }
-      }
-    }
-  }
-
-  // 添加更新笔记列表的方法
-  updateNotesList() {
-    const notesList = document.querySelector(".notes-list");
-    if (!notesList) {
-      console.error("Notes list container not found");
-      return;
-    }
-
-    const locationNotes =
-      this.locations[this.currentEditingLocationIndex].notes || [];
-
-    if (locationNotes.length === 0) {
-      notesList.innerHTML = '<div class="no-notes">No notes yet</div>';
-      return;
-    }
-
-    notesList.innerHTML = locationNotes
-      .map(
-        (note) => `
-            <div class="note-card" data-note-id="${note.id}">
-                <div class="note-header">
-                    <div class="note-date">${new Date(
-                      note.date
-                    ).toLocaleString()}</div>
-                    <div class="note-actions">
-                        <button class="edit-note" title="Edit note">
-                            <svg class="edit-icon" viewBox="0 0 24 24">
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                            </svg>
-                        </button>
-                        <button class="delete-note" title="Delete note">
-                            <svg class="delete-icon" viewBox="0 0 24 24">
-                                <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="note-content">${note.content}</div>
-            </div>
-        `
-      )
-      .join("");
-
-    // 添加编辑和删除事件监听
-    notesList.querySelectorAll(".edit-note").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const noteId = e.target.closest(".note-card").dataset.noteId;
-        this.editNote(noteId);
-      });
-    });
-
-    notesList.querySelectorAll(".delete-note").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const noteCard = e.target.closest(".note-card");
-        const noteId = noteCard.dataset.noteId;
-
-        // 显示删除笔记确认话框
-        const deleteModal = document.getElementById("delete-note-modal");
-        const confirmBtn = document.getElementById("confirm-delete-note");
-        const cancelBtn = document.getElementById("cancel-delete-note");
-
-        // 显示模态框
-        deleteModal.style.display = "block";
-        document.body.style.overflow = "hidden";
-
-        // 处理取消按钮
-        const closeModal = () => {
-          deleteModal.style.display = "none";
-          document.body.style.overflow = "";
-        };
-
-        cancelBtn.onclick = closeModal;
-        deleteModal.querySelector(".close-modal").onclick = closeModal;
-
-        // 处理确认删除按钮
-        confirmBtn.onclick = () => {
-          const notes = this.locations[this.currentEditingLocationIndex].notes;
-          const index = notes.findIndex((n) => n.id.toString() === noteId);
-          if (index !== -1) {
-            notes.splice(index, 1);
-            this.updateNotesList();
-          }
-          closeModal();
-        };
-
-        // 点击模态框外部关闭
-        deleteModal.onclick = (e) => {
-          if (e.target === deleteModal) {
-            closeModal();
-          }
-        };
-      });
-    });
-  }
-
-  // 修改编辑笔记的方法
-  editNote(noteId) {
-    const notes = this.locations[this.currentEditingLocationIndex].notes;
-    const note = notes.find((n) => n.id.toString() === noteId);
-    if (note) {
-      const editor = document.getElementById("note-editor");
-      const saveBtn = document.getElementById("save-note");
-      const cancelBtn = document.getElementById("cancel-note");
-
-      editor.value = note.content;
-      saveBtn.textContent = "Update Note";
-      cancelBtn.style.display = "block"; // 编辑时显示取消按钮
-
-      this.editingNoteId = noteId;
-      editor.focus();
-    }
-  }
-
-  // 修改取消编辑的方法
-  cancelNote() {
-    const editor = document.getElementById("note-editor");
-    const saveBtn = document.getElementById("save-note");
-    const cancelBtn = document.getElementById("cancel-note");
-
-    editor.value = "";
-    saveBtn.textContent = "Add Note";
-    cancelBtn.style.display = "none"; // 取消后隐藏取消按钮
-
-    this.editingNoteId = null;
-  }
-
   // 修改打开编辑器的方法
   openNoteEditor(locationIndex) {
-    const modal = document.getElementById("editor-modal");
-    const editor = document.getElementById("note-editor");
-    const saveBtn = document.getElementById("save-note");
-    const cancelBtn = document.getElementById("cancel-note");
-
-    this.currentEditingLocationIndex = locationIndex;
-
-    modal.style.display = "block";
-    document.body.style.overflow = "hidden";
-
-    // 重置编辑器状态
-    editor.value = "";
-    saveBtn.textContent = "Add Note";
-    cancelBtn.style.display = "none"; // 默认藏取消按钮
-    this.editingNoteId = null;
-
-    // 更新笔记列表
-    this.updateNotesList();
-
-    // 添加事件监听
-    const closeBtn = modal.querySelector(".close-modal");
-
-    closeBtn.onclick = () => {
-      modal.style.display = "none";
-      document.body.style.overflow = "";
-      this.currentEditingLocationIndex = null;
-      this.editingNoteId = null;
-    };
-
-    saveBtn.onclick = () => {
-      this.saveLocationNote();
-    };
-
-    cancelBtn.onclick = () => {
-      this.cancelNote();
-    };
-
-    // 点击模态框外部关闭
-    modal.onclick = (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "";
-        this.currentEditingLocationIndex = null;
-        this.editingNoteId = null;
-      }
-    };
+    this.noteService.openNoteEditor(locationIndex);
   }
 }
 
+// 修改初始化方式
 window.initializeTravelPlanner = function() {
     if (typeof google === "undefined") {
         console.error("Google Maps API is not loaded correctly");
@@ -1159,19 +945,12 @@ window.initializeTravelPlanner = function() {
     window.travelPlanner = new TravelPlanner();
 }
 
-// 如果页面已经加载完成，直接初始化
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-        // 只有在 Google Maps API 加载完成后才会调用
-        if (typeof google !== "undefined") {
-            initializeTravelPlanner();
-        }
-    });
-} else {
+// 确保在 DOM 加载完成后再初始化
+document.addEventListener("DOMContentLoaded", () => {
     if (typeof google !== "undefined") {
-        initializeTravelPlanner();
+        window.initializeTravelPlanner();
     }
-}
+});
 
 // 添加登录按钮点击事件
 document.getElementById("loginBtn").addEventListener("click", function () {
