@@ -192,34 +192,29 @@ class TravelPlanner {
         totalTime += duration;
         totalDistance += distance;
 
-        // 更新路线段信息
-        const t = translations[this.getCurrentLanguage()];
-        
-        // 修改这里：转换时间显示格式
+        // 将秒转换为小时和分钟
+        const durationHours = Math.floor(duration / 3600);
+        const durationMinutes = Math.round((duration % 3600) / 60);
+
+        // 根据语言格式化时间显示
         let timeDisplay;
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.round((duration % 3600) / 60);
-        
         if (this.getCurrentLanguage() === "zh") {
-            timeDisplay = hours > 0 ? 
-                `${hours} 小时 ${minutes} 分钟` : 
-                `${minutes} 分钟`;
+          timeDisplay = `${durationHours} 小时 ${durationMinutes} 分钟`;
         } else {
-            timeDisplay = hours > 0 ? 
-                `${hours}h ${minutes}m` : 
-                `${minutes}m`;
+          timeDisplay = `${durationHours}h ${durationMinutes}m`;
         }
-        
+
+        // 更新路线段信息
         routeSection.querySelector(".travel-time").textContent = timeDisplay;
         routeSection.querySelector(".distance").textContent = `${(
-            distance / 1000
+          distance / 1000
         ).toFixed(1)} km (${(distance / 1609.34).toFixed(1)} mi)`;
 
         // 初始化地图
         const mapElement = routeSection.querySelector(".route-map");
         if (mapElement) {
           mapElement.style.width = "100%";
-          mapElement.style.height = "300px";
+          mapElement.style.height = "360px";
 
           const map = new google.maps.Map(mapElement, {
             zoom: 12,
@@ -250,23 +245,25 @@ class TravelPlanner {
       }
     }
 
-    // 更新总计
-    const t = translations[this.getCurrentLanguage()];
-    const hours = Math.floor(totalTime / 3600);
-    const minutes = Math.round((totalTime % 3600) / 60);
-
+    // 更新总计时间和距离
+    const totalHours = Math.floor(totalTime / 3600);
+    const totalMinutes = Math.round((totalTime % 3600) / 60);
     let timeDisplay;
+
     if (this.getCurrentLanguage() === "zh") {
-      timeDisplay =
-        hours > 0 ? `${hours} 小时 ${minutes} 分钟` : `${minutes} 分钟`;
+      timeDisplay = `${totalHours} 小时 ${totalMinutes} 分钟`;
     } else {
-      timeDisplay = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+      timeDisplay = `${totalHours}h ${totalMinutes}m`;
     }
 
-    this.totalTime.textContent = timeDisplay;
-    this.totalDistance.textContent = `${(totalDistance / 1000).toFixed(
-      1
-    )} km (${(totalDistance / 1609.34).toFixed(1)} mi)`;
+    // 确保元素存在后再更新内容
+    if (this.totalTime) {
+      this.totalTime.textContent = timeDisplay;
+    }
+    
+    if (this.totalDistance) {
+      this.totalDistance.textContent = `${(totalDistance / 1000).toFixed(1)} km (${(totalDistance / 1609.34).toFixed(1)} mi)`;
+    }
 
     // 更新访问顺序面板
     this.updateVisitOrder();
@@ -275,39 +272,31 @@ class TravelPlanner {
   createRouteSection(start, end) {
     const t = translations[this.getCurrentLanguage()];
     const template = `
-            <div class="route-section" draggable="true">
-                <div class="route-number">${t.route} ${
-      this.locations.indexOf(start) + 1
-    }</div>
-                <div class="route-info">
-                    <div class="location-details">
-                        <div class="start-location">
-                            <h4>${t.startPoint}</h4>
-                            <p class="location-name">${start.name}</p>
-                            <p class="location-address">${
-                              start.address || ""
-                            }</p>
-                        </div>
-                        <div class="end-location">
-                            <h4>${t.endPoint}</h4>
-                            <p class="location-name">${end.name}</p>
-                            <p class="location-address">${end.address || ""}</p>
-                        </div>
+        <div class="route-section">
+            <div class="route-info">
+                <div class="route-number">${t.route} ${this.locations.indexOf(start) + 1}</div>
+                <div class="location-details">
+                    <div class="start-location">
+                        <h4>${t.startPoint}</h4>
+                        <p class="location-name">${start.name}</p>
+                        <p class="location-address">${start.address || ""}</p>
+                    </div>
+                    <div class="end-location">
+                        <h4>${t.endPoint}</h4>
+                        <p class="location-name">${end.name}</p>
+                        <p class="location-address">${end.address || ""}</p>
                     </div>
                     <div class="route-stats">
-                        <p>${t.travelTime}: <span class="travel-time">${
-      t.calculating
-    }</span></p>
-                        <p>${t.distance}: <span class="distance">${
-      t.calculating
-    }</span></p>
+                        <p>${t.travelTime}: <span class="travel-time">${t.calculating}</span></p>
+                        <p>${t.distance}: <span class="distance">${t.calculating}</span></p>
                     </div>
                 </div>
-                <div class="map-container">
-                    <div class="route-map"></div>
-                </div>
             </div>
-        `;
+            <div class="map-container">
+                <div class="route-map"></div>
+            </div>
+        </div>
+    `;
     const div = document.createElement("div");
     div.innerHTML = template.trim();
     return div.firstChild;
@@ -336,24 +325,22 @@ class TravelPlanner {
   createSingleLocationSection(location) {
     const t = translations[this.getCurrentLanguage()];
     const template = `
-            <div class="route-section" draggable="true">
-                <div class="route-number">Route 1</div>
-                <div class="route-info">
-                    <div class="location-details">
-                        <div class="start-location">
-                            <h4>${t.startPoint}</h4>
-                            <p class="location-name">${location.name}</p>
-                            <p class="location-address">${
-                              location.address || ""
-                            }</p>
-                        </div>
+        <div class="route-section">
+            <div class="route-info">
+                <div class="route-number">${t.route} 1</div>
+                <div class="location-details">
+                    <div class="start-location">
+                        <h4>${t.startPoint}</h4>
+                        <p class="location-name">${location.name}</p>
+                        <p class="location-address">${location.address || ""}</p>
                     </div>
                 </div>
-                <div class="map-container">
-                    <div class="route-map"></div>
-                </div>
             </div>
-        `;
+            <div class="map-container">
+                <div class="route-map"></div>
+            </div>
+        </div>
+    `;
     const div = document.createElement("div");
     div.innerHTML = template.trim();
     const element = div.firstChild;
@@ -363,7 +350,7 @@ class TravelPlanner {
       const mapElement = element.querySelector(".route-map");
       if (mapElement) {
         mapElement.style.width = "100%";
-        mapElement.style.height = "300px";
+        mapElement.style.height = "360px";
 
         const map = new google.maps.Map(mapElement, {
           center: location.location,
@@ -990,7 +977,7 @@ window.addEventListener("click", function (event) {
 document.querySelector(".login-form").addEventListener("submit", function (e) {
   e.preventDefault();
   // 这里添加登录逻辑
-  console.log("登录表单提交");
+  console.log("登录表单��交");
 });
 
 // 处理社交登录按钮点击
