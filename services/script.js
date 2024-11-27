@@ -194,10 +194,25 @@ class TravelPlanner {
 
         // 更新路线段信息
         const t = translations[this.getCurrentLanguage()];
-        routeSection.querySelector(".travel-time").textContent =
-          Math.round(duration / 60) + " " + t.minutes;
+        
+        // 修改这里：转换时间显示格式
+        let timeDisplay;
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.round((duration % 3600) / 60);
+        
+        if (this.getCurrentLanguage() === "zh") {
+            timeDisplay = hours > 0 ? 
+                `${hours} 小时 ${minutes} 分钟` : 
+                `${minutes} 分钟`;
+        } else {
+            timeDisplay = hours > 0 ? 
+                `${hours}h ${minutes}m` : 
+                `${minutes}m`;
+        }
+        
+        routeSection.querySelector(".travel-time").textContent = timeDisplay;
         routeSection.querySelector(".distance").textContent = `${(
-          distance / 1000
+            distance / 1000
         ).toFixed(1)} km (${(distance / 1609.34).toFixed(1)} mi)`;
 
         // 初始化地图
