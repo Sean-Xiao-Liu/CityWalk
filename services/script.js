@@ -452,26 +452,29 @@ class TravelPlanner {
       const orderItem = document.createElement("div");
       orderItem.className = "visit-order-item";
       orderItem.innerHTML = `
-                <div class="location-number">${index + 1}</div>
-                <div class="location-info">
-                    <div class="location-name">${location.name}</div>
-                    <div class="location-address">${
-                      location.address || ""
-                    }</div>
-                </div>
-                <div class="icons-container">
-                    <button class="edit-location" data-index="${index}" title="Edit location">
-                        <svg class="edit-icon" viewBox="0 0 24 24">
-                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                        </svg>
-                    </button>
-                    <button class="delete-location" data-index="${index}" title="Delete location">
-                        <svg class="delete-icon" viewBox="0 0 24 24">
-                            <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
-                        </svg>
-                    </button>
-                </div>
-            `;
+        <div class="location-number">${index + 1}</div>
+        <div class="location-info">
+          <div class="location-name">${location.name}</div>
+          <div class="location-address">${location.address || ""}</div>
+        </div>
+        <div class="icons-container">
+          <button class="copy-location" data-index="${index}" title="Copy location">
+            <svg class="copy-icon" viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+          <button class="edit-location" data-index="${index}" title="Edit location">
+            <svg class="edit-icon" viewBox="0 0 24 24">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+          </button>
+          <button class="delete-location" data-index="${index}" title="Delete location">
+            <svg class="delete-icon" viewBox="0 0 24 24">
+              <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+            </svg>
+          </button>
+        </div>
+      `;
 
       // 添加点击事件处理
       this.setupVisitOrderItemEvents(orderItem, index);
@@ -556,6 +559,39 @@ class TravelPlanner {
       } else {
         // 如果没有笔记，直接删除
         this.removeLocation(index);
+      }
+    });
+
+    // 添加复制按钮事件监听器
+    const copyBtn = orderItem.querySelector(".copy-location");
+    copyBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const location = this.locations[index];
+      
+      // 创建新的位置对象
+      const newLocation = {
+        name: location.name,
+        location: { ...location.location },
+        address: location.address,
+        notes: location.notes ? [...location.notes] : []
+      };
+
+      // 在当前位置后插入新位置
+      this.locations.splice(index + 1, 0, newLocation);
+      
+      // 更新路线和显示
+      this.updateRoutes();
+      
+      // 如果当前是已保存的行程，更新 localStorage
+      if (this.currentTripName) {
+        let savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
+        const tripIndex = savedTrips.findIndex(
+          (trip) => trip.name === this.currentTripName
+        );
+        if (tripIndex !== -1) {
+          savedTrips[tripIndex].locations = this.locations;
+          localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
+        }
       }
     });
   }
@@ -1039,7 +1075,7 @@ document
     document.getElementById("login-modal").style.display = "none";
   });
 
-// 点击模态框外部关闭
+// 点击模态框外部��闭
 window.addEventListener("click", function (event) {
   if (event.target == document.getElementById("login-modal")) {
     document.getElementById("login-modal").style.display = "none";

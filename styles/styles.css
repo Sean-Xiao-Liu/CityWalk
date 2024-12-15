@@ -1502,3 +1502,28 @@ footer a:hover {
     margin: 1rem 0;
     overflow: hidden;
 } 
+
+/* 添加复制按钮样式 */
+.visit-order-item .copy-location {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visit-order-item .copy-location:hover {
+    opacity: 1;
+}
+
+.visit-order-item .copy-icon {
+    width: 24px;
+    height: 24px;
+    fill: #A68B7C;
+} 
