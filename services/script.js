@@ -52,6 +52,8 @@ class TravelPlanner {
     this.initializeSaveTrip();
     this.loadSavedTrips();
     this.initializeAuth();
+    this.summaryMap = null;
+    this.summaryDirectionsRenderer = null;
   }
 
   // 获取当前语言
@@ -267,6 +269,56 @@ class TravelPlanner {
 
     // 更新访问顺序面板
     this.updateVisitOrder();
+
+    // 初始化总览地图（如果还没有初始化）
+    if (!this.summaryMap) {
+      this.initializeSummaryMap();
+    }
+
+    // 更新总览地图
+    if (this.locations.length >= 2) {
+      try {
+        const waypoints = this.locations.slice(1, -1).map(loc => ({
+          location: loc.location,
+          stopover: true
+        }));
+
+        const result = await this.directionsService.route({
+          origin: this.locations[0].location,
+          destination: this.locations[this.locations.length - 1].location,
+          waypoints: waypoints,
+          travelMode: google.maps.TravelMode.DRIVING,
+          optimizeWaypoints: false
+        });
+
+        this.summaryDirectionsRenderer.setDirections(result);
+        
+        // 调整地图视野以显示所有路线
+        const bounds = new google.maps.LatLngBounds();
+        this.locations.forEach(loc => {
+          bounds.extend(loc.location);
+        });
+        this.summaryMap.fitBounds(bounds);
+
+      } catch (error) {
+        console.error("Summary route calculation error:", error);
+      }
+    } else if (this.locations.length === 1) {
+      // 如果只有一个地点，显示单个标记
+      this.summaryDirectionsRenderer.setMap(null);
+      const marker = new google.maps.Marker({
+        position: this.locations[0].location,
+        map: this.summaryMap,
+        title: this.locations[0].name
+      });
+      this.summaryMap.setCenter(this.locations[0].location);
+      this.summaryMap.setZoom(15);
+    } else {
+      // 如果没有地点，清除地图
+      this.summaryDirectionsRenderer.setMap(null);
+      this.summaryMap.setCenter({ lat: 0, lng: 0 });
+      this.summaryMap.setZoom(2);
+    }
   }
 
   createRouteSection(start, end) {
@@ -936,6 +988,27 @@ class TravelPlanner {
   openNoteEditor(locationIndex) {
     this.noteService.openNoteEditor(locationIndex);
   }
+
+  // 添加初始化总览地图的方法
+  initializeSummaryMap() {
+    const mapElement = document.getElementById('summary-map');
+    if (!mapElement) return;
+
+    this.summaryMap = new google.maps.Map(mapElement, {
+      zoom: 12,
+      center: { lat: 0, lng: 0 },
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      gestureHandling: "cooperative",
+    });
+
+    this.summaryDirectionsRenderer = new google.maps.DirectionsRenderer({
+      map: this.summaryMap,
+      suppressMarkers: false,
+      draggable: false,
+    });
+  }
 }
 
 // 修改初始化方式
@@ -977,7 +1050,7 @@ window.addEventListener("click", function (event) {
 document.querySelector(".login-form").addEventListener("submit", function (e) {
   e.preventDefault();
   // 这里添加登录逻辑
-  console.log("登录表单��交");
+  console.log("登录表单交");
 });
 
 // 处理社交登录按钮点击
