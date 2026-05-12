@@ -1530,3 +1530,61 @@ footer a:hover {
     height: 24px;
     fill: #A68B7C;
 } 
+
+/* 修改确认按钮样式 */
+.delete-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.delete-buttons button {
+    min-width: 120px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.delete-buttons .primary-btn {
+    background-color: #A68B7C;
+    color: white;
+    border: none;
+}
+
+.delete-buttons .primary-btn:hover {
+    background-color: #8E7567;
+}
+
+.delete-buttons .secondary-btn {
+    background-color: #f8f9fa;
+    color: #4A4A4A;
+    border: 1px solid #E5E5E5;
+}
+
+.delete-buttons .secondary-btn:hover {
+    background-color: #e9ecef;
+    border-color: #A68B7C;
+} 
+
+/* Add styles for the save button states */
+.save-trip-btn.has-changes {
+    background-color: #e74c3c;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+    }
+} 

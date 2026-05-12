@@ -11,8 +11,7 @@
         <nav>
             <div class="logo">City  Walk</div>
             <ul>
-                <li class="saved-trips-dropdown">
-                    <a href="#" id="saved-trips-btn">Saved Trips</a>
+                <li class="saved-trips-dropdown">                    <a href="#" id="saved-trips-btn">Saved Trips</a>
                     <div class="dropdown-content" id="saved-trips-list">
                         <!-- 保存的行程将在这里动态显示 -->
                     </div>
@@ -251,6 +250,18 @@
                 </button>
             </div>
             <p class="switch-auth">Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+        </div>
+    </div>
+
+    <div id="save-changes-modal" class="modal">
+        <div class="modal-content delete-modal">
+            <span class="close-modal">&times;</span>
+            <h3>Save Changes</h3>
+            <p class="delete-message">Do you want to save changes to "<span class="trip-name"></span>"?</p>
+            <div class="delete-buttons">
+                <button id="cancel-save-changes" class="secondary-btn">Cancel</button>
+                <button id="confirm-save-changes" class="primary-btn">Save Changes</button>
+            </div>
         </div>
     </div>
 

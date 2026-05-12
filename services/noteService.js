@@ -66,6 +66,11 @@ export class NoteService {
             localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
           }
         }
+
+        // Update routes to trigger save button state change
+        if (window.travelPlanner) {
+            window.travelPlanner.updateRoutes();
+        }
       }
     }
   }

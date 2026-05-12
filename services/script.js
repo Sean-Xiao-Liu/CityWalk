@@ -65,15 +65,12 @@ class TravelPlanner {
     new Sortable(this.locationsContainer, {
       animation: 150,
       onEnd: (evt) => {
-        // 更新 locations 数组顺序
         const oldIndex = evt.oldIndex;
         const newIndex = evt.newIndex;
 
-        // 移动数组元素
         const [movedLocation] = this.locations.splice(oldIndex, 1);
         this.locations.splice(newIndex, 0, movedLocation);
 
-        // 更新路线和显示
         this.updateRoutes();
       },
     });
@@ -106,32 +103,38 @@ class TravelPlanner {
 
     await this.updateRoutes();
     this.searchInput.value = "";
-
-    // 如果当前是已保存的行程，更新 localStorage
-    if (this.currentTripName) {
-      let savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
-      const tripIndex = savedTrips.findIndex(
-        (trip) => trip.name === this.currentTripName
-      );
-      if (tripIndex !== -1) {
-        savedTrips[tripIndex].locations = this.locations;
-        localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
-
-        // 可选：更新保存的行程列表显示
-        this.updateSavedTripsList();
-      }
-    }
   }
 
-  removeLocation(routeSection) {
-    const index = Array.from(this.locationsContainer.children).indexOf(
-      routeSection
-    );
-    if (index !== -1) {
-      this.locations.splice(index, 1);
-      routeSection.remove();
-      this.updateRoutes();
-    }
+  removeLocation(index) {
+    this.locations.splice(index, 1);
+    this.updateRoutes();
+  }
+
+  hasUnsavedChanges() {
+    if (!this.currentTripName) return false;
+    
+    const savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
+    const currentTrip = savedTrips.find(trip => trip.name === this.currentTripName);
+    
+    if (!currentTrip) return false;
+
+    // Compare locations length
+    if (currentTrip.locations.length !== this.locations.length) return true;
+
+    // Compare each location's content and order
+    return this.locations.some((location, index) => {
+        const savedLocation = currentTrip.locations[index];
+        return (
+            // Check if location is different
+            location.name !== savedLocation.name ||
+            location.address !== savedLocation.address ||
+            // Check if coordinates are different
+            location.location.lat() !== savedLocation.location.lat ||
+            location.location.lng() !== savedLocation.lng ||
+            // Check if notes are different
+            JSON.stringify(location.notes || []) !== JSON.stringify(savedLocation.notes || [])
+        );
+    });
   }
 
   async updateRoutes() {
@@ -319,6 +322,16 @@ class TravelPlanner {
       this.summaryMap.setCenter({ lat: 0, lng: 0 });
       this.summaryMap.setZoom(2);
     }
+
+    // After updating routes, check if we need to enable the save button
+    const saveBtn = document.getElementById("save-trip");
+    if (this.currentTripName && this.hasUnsavedChanges()) {
+        saveBtn.classList.add("has-changes");
+        saveBtn.textContent = translations[this.getCurrentLanguage()].saveChanges;
+    } else {
+        saveBtn.classList.remove("has-changes");
+        saveBtn.textContent = translations[this.getCurrentLanguage()].saveTrip;
+    }
   }
 
   createRouteSection(start, end) {
@@ -434,11 +447,9 @@ class TravelPlanner {
         const oldIndex = evt.oldIndex;
         const newIndex = evt.newIndex;
 
-        // 新locations数组顺序
         const [movedLocation] = this.locations.splice(oldIndex, 1);
         this.locations.splice(newIndex, 0, movedLocation);
 
-        // 更新路
         this.updateRoutes();
       },
     });
@@ -568,7 +579,6 @@ class TravelPlanner {
       e.stopPropagation();
       const location = this.locations[index];
       
-      // 创建新的位置对象
       const newLocation = {
         name: location.name,
         location: { ...location.location },
@@ -576,69 +586,87 @@ class TravelPlanner {
         notes: location.notes ? [...location.notes] : []
       };
 
-      // 在当前位置后插入新位置
       this.locations.splice(index + 1, 0, newLocation);
-      
-      // 更新路线和显示
       this.updateRoutes();
-      
-      // 如果当前是已保存的行程，更新 localStorage
-      if (this.currentTripName) {
-        let savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
-        const tripIndex = savedTrips.findIndex(
-          (trip) => trip.name === this.currentTripName
-        );
-        if (tripIndex !== -1) {
-          savedTrips[tripIndex].locations = this.locations;
-          localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
-        }
-      }
     });
   }
 
   removeLocation(index) {
     this.locations.splice(index, 1);
     this.updateRoutes();
-
-    // 如果当前是已保存的行程，更新 localStorage
-    if (this.currentTripName) {
-      let savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
-      const tripIndex = savedTrips.findIndex(
-        (trip) => trip.name === this.currentTripName
-      );
-      if (tripIndex !== -1) {
-        savedTrips[tripIndex].locations = this.locations;
-        localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
-      }
-    }
   }
 
   initializeSaveTrip() {
     const saveBtn = document.getElementById("save-trip");
     const modal = document.getElementById("save-trip-modal");
+    const saveChangesModal = document.getElementById("save-changes-modal");
     const closeBtn = modal.querySelector(".close-modal");
     const confirmBtn = document.getElementById("confirm-save-trip");
     const tripNameInput = document.getElementById("trip-name");
 
     saveBtn.addEventListener("click", () => {
-      modal.style.display = "block";
-      document.body.style.overflow = "hidden";
+        if (this.currentTripName) {
+            // 显示保存更改确认模态框
+            saveChangesModal.style.display = "block";
+            document.body.style.overflow = "hidden";
+
+            // 设置行程名称
+            saveChangesModal.querySelector(".trip-name").textContent = this.currentTripName;
+
+            const confirmSaveBtn = document.getElementById("confirm-save-changes");
+            const cancelSaveBtn = document.getElementById("cancel-save-changes");
+            const closeModalBtn = saveChangesModal.querySelector(".close-modal");
+
+            const closeModal = () => {
+                saveChangesModal.style.display = "none";
+                document.body.style.overflow = "";
+            };
+
+            // 清除之前的事件监听器
+            const newConfirmBtn = confirmSaveBtn.cloneNode(true);
+            const newCancelBtn = cancelSaveBtn.cloneNode(true);
+            const newCloseBtn = closeModalBtn.cloneNode(true);
+            
+            confirmSaveBtn.parentNode.replaceChild(newConfirmBtn, confirmSaveBtn);
+            cancelSaveBtn.parentNode.replaceChild(newCancelBtn, cancelSaveBtn);
+            closeModalBtn.parentNode.replaceChild(newCloseBtn, closeModalBtn);
+
+            // 添加新的事件监听器
+            newConfirmBtn.onclick = () => {
+                this.updateTrip(this.currentTripName);
+                closeModal();
+            };
+            newCancelBtn.onclick = closeModal;
+            newCloseBtn.onclick = closeModal;
+
+            // 点击模态框外部关闭
+            saveChangesModal.onclick = (e) => {
+                if (e.target === saveChangesModal) {
+                    closeModal();
+                }
+            };
+        } else {
+            // 如果是新行程，显示保存行程模态框
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden";
+            tripNameInput.focus();
+        }
     });
 
     closeBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-      document.body.style.overflow = "";
-      tripNameInput.value = "";
-    });
-
-    confirmBtn.addEventListener("click", () => {
-      const tripName = tripNameInput.value.trim();
-      if (tripName) {
-        this.saveTrip(tripName);
         modal.style.display = "none";
         document.body.style.overflow = "";
         tripNameInput.value = "";
-      }
+    });
+
+    confirmBtn.addEventListener("click", () => {
+        const tripName = tripNameInput.value.trim();
+        if (tripName) {
+            this.saveTrip(tripName);
+            modal.style.display = "none";
+            document.body.style.overflow = "";
+            tripNameInput.value = "";
+        }
     });
   }
 
@@ -1025,7 +1053,7 @@ class TravelPlanner {
     this.noteService.openNoteEditor(locationIndex);
   }
 
-  // 添加初始化总览地图的方法
+  // 添加初始化总览地图��方法
   initializeSummaryMap() {
     const mapElement = document.getElementById('summary-map');
     if (!mapElement) return;
@@ -1044,6 +1072,30 @@ class TravelPlanner {
       suppressMarkers: false,
       draggable: false,
     });
+  }
+
+  // 添加更新行程的方法
+  updateTrip(tripName) {
+    let savedTrips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
+    const tripIndex = savedTrips.findIndex(trip => trip.name === tripName);
+    
+    if (tripIndex !== -1) {
+        // 更新现有行程
+        savedTrips[tripIndex] = {
+            name: tripName,
+            locations: this.locations.map(location => ({
+                name: location.name,
+                location: location.location,
+                address: location.address,
+                notes: location.notes || [],
+                savedTripId: location.savedTripId,
+            })),
+            date: new Date().toISOString(),
+        };
+        
+        localStorage.setItem("savedTrips", JSON.stringify(savedTrips));
+        this.updateSavedTripsList();
+    }
   }
 }
 
@@ -1075,7 +1127,7 @@ document
     document.getElementById("login-modal").style.display = "none";
   });
 
-// 点击模态框外部��闭
+// 点击模态框外部关闭
 window.addEventListener("click", function (event) {
   if (event.target == document.getElementById("login-modal")) {
     document.getElementById("login-modal").style.display = "none";

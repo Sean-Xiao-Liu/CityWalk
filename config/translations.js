@@ -41,7 +41,10 @@ const translations = {
         switchToLogin: "Already have an account? Login",
         switchToSignup: "Don't have an account? Sign Up",
         cancel: "Cancel",
-        confirm: "Confirm"
+        confirm: "Confirm",
+        saveChanges: "Save Changes*",
+        saveChangesConfirm: "Do you want to save changes to this trip?",
+        tripUpdateSuccess: "Trip updated successfully!"
     },
     zh: {
         title: "城市漫步 - 旅行规划工具",
@@ -85,6 +88,9 @@ const translations = {
         switchToLogin: "已有账号？点击登录",
         switchToSignup: "没有账号？点击注册",
         cancel: "取消",
-        confirm: "确认"
+        confirm: "确认",
+        saveChanges: "保存更改*",
+        saveChangesConfirm: "是否要保存对此行程的更改？",
+        tripUpdateSuccess: "行程更新成功！"
     }
 }; 
