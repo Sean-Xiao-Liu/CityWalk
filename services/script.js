@@ -105,11 +105,6 @@ class TravelPlanner {
     this.searchInput.value = "";
   }
 
-  removeLocation(index) {
-    this.locations.splice(index, 1);
-    this.updateRoutes();
-  }
-
   hasUnsavedChanges() {
     if (!this.currentTripName) return false;
     
@@ -443,6 +438,8 @@ class TravelPlanner {
     new Sortable(document.getElementById("visit-order"), {
       animation: 150,
       group: "locations",
+      filter: ".icons-container",
+      preventOnFilter: true,
       onEnd: (evt) => {
         const oldIndex = evt.oldIndex;
         const newIndex = evt.newIndex;

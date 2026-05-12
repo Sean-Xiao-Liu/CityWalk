@@ -375,13 +375,24 @@ footer a:hover {
     position: fixed;
     left: 10px;
     top: 110px;
-    max-height: calc(100vh - 184px);
-    overflow-y: auto;
+    max-height: min(1000px, calc(100vh - 130px));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background-color: #FFFFFF;
+    z-index: 50;
+}
+
+.visit-order-panel h2 {
+    flex-shrink: 0;
 }
 
 .visit-order-list {
     margin-top: 1rem;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .visit-order-item {
@@ -480,6 +491,18 @@ footer a:hover {
         position: static;
         width: 100%;
         max-height: none;
+        top: auto;
+        bottom: auto;
+        display: block;
+        overflow: visible;
+        z-index: auto;
+    }
+
+    .visit-order-list {
+        flex: none;
+        min-height: 0;
+        overflow-y: visible;
+        overflow-x: visible;
     }
 
     nav, .footer-content {
